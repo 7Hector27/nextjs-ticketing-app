@@ -1,0 +1,59 @@
+.authForm {
+  height: 500px;
+  padding: 44px 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  .title {
+    color: #182b44;
+    font-weight: 600;
+    font-size: 42px;
+    margin: 0 auto;
+    max-width: 500px;
+    text-align: center;
+    padding-bottom: 50px;
+  }
+  .formWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    .form {
+      color: #182b44;
+      background-color: white;
+      padding: 26px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      border: 1px solid #c5c5c5;
+      border-radius: 11px;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
+      .input {
+        background-color: white;
+        border: 1px solid #979797;
+        border-radius: 4px;
+        height: 30px;
+        padding: 8px;
+        font-size: 14px;
+      }
+      .button {
+        background-color: #114599;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        height: 30px;
+      }
+      .formSwitchBtn {
+        background: none;
+        border: none;
+        color: #0066ff;
+        cursor: pointer;
+        font-size: 16px;
+        text-decoration: underline;
+        padding: 0;
+      }
+    }
+  }
+}

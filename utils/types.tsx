@@ -19,6 +19,7 @@ export type Event = {
   availableTickets: number;
   price: number;
   organizerId: string;
+  featured?: boolean;
 };
 
 export type Ticket = {
@@ -33,3 +34,11 @@ export type Ticket = {
   status: "valid" | "used";
   seatNumber?: string;
 };
+export interface Order {
+  id: string;
+  userId?: string;
+  attendeeEmail: string;
+  eventId: string;
+  ticketIds: string[];
+  createdAt: Date;
+}
