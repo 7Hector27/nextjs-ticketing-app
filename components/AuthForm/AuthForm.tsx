@@ -1,13 +1,39 @@
 import React, { useState } from "react";
+
+import UserAPI from "@/lib/UserAPI";
+
 import styles from "./AuthForm.module.scss";
 
 const AuthForm = () => {
   const [isLogIn, setIsLogIn] = useState(true);
+  const userAPI = new UserAPI();
+
+  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const name = formData.get("fullName") as string;
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    try {
+      const response = await userAPI.createUser(name, email, password);
+      if (response.ok) {
+        alert("User created successfully!");
+        setIsLogIn(true);
+        form.reset();
+      } else {
+        const data = await response.json();
+        alert(`Error: ${data}`);
+      }
+    } catch (error) {
+      console.error("Error creating user:", error);
+      alert("An error occurred while creating the user.");
+    }
+  };
 
   return (
     <div className={styles.authForm}>
       <h2 className={styles.title}>Access your tickets, anytime, anywhere. </h2>
-
       <div className={styles.formWrapper}>
         {isLogIn ? (
           <form action={() => {}} className={styles.form}>
@@ -41,7 +67,7 @@ const AuthForm = () => {
             </p>
           </form>
         ) : (
-          <form action={() => {}} className={styles.form}>
+          <form onSubmit={handleSignUp} className={styles.form}>
             <input
               type="text"
               id="fullName"
