@@ -45,15 +45,22 @@
         border: none;
         border-radius: 4px;
         height: 30px;
+        cursor: pointer;
+        &:hover {
+          background-color: #1553b6;
+        }
       }
       .formSwitchBtn {
         background: none;
         border: none;
-        color: #0066ff;
+        color: #114599;
         cursor: pointer;
         font-size: 16px;
         text-decoration: underline;
         padding: 0;
+        &:hover {
+          color: #2171f1;
+        }
       }
     }
   }
