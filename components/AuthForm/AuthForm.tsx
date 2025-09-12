@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/router";
 
 import UserAPI from "@/lib/UserAPI";
 
@@ -7,6 +9,7 @@ import styles from "./AuthForm.module.scss";
 const AuthForm = () => {
   const [isLogIn, setIsLogIn] = useState(true);
   const userAPI = new UserAPI();
+  const router = useRouter();
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -31,12 +34,43 @@ const AuthForm = () => {
     }
   };
 
+  const logInMutation = useMutation({
+    mutationFn: async (data: { email: string; password: string }) => {
+      const response = await userAPI.authLogin(data.email, data.password);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to log in");
+      }
+
+      return response.json(); // return token payload
+    },
+    onSuccess: (data) => {
+      document.cookie = `authToken=${data.token}; path=/; secure; samesite=strict`;
+      setIsLogIn(true);
+      router.push("/dash");
+    },
+    onError: (error) => {
+      alert(error.message || "An error occurred while logging in.");
+    },
+  });
+
+  const handleLogIn = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    logInMutation.mutate({ email, password });
+  };
+
   return (
     <div className={styles.authForm}>
       <h2 className={styles.title}>Access your tickets, anytime, anywhere. </h2>
       <div className={styles.formWrapper}>
         {isLogIn ? (
-          <form action={() => {}} className={styles.form}>
+          <form onSubmit={handleLogIn} className={styles.form}>
             <input
               type="text"
               id="email"
