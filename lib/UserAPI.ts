@@ -28,4 +28,16 @@ export default class UserAPI {
       credentials: "include",
     });
   }
+
+  async logOut() {
+    const res = await fetch(`/api/logout`, {
+      method: "POST",
+      credentials: "include", // important so browser applies Set-Cookie
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || "Failed to log out");
+    }
+    return res.json();
+  }
 }

@@ -6,7 +6,7 @@ import { useUser } from "@/lib/hooks/useUserRole";
 import styles from "./styles.module.scss";
 
 const Dashboard = () => {
-  const { role, name } = useUser();
+  const { name } = useUser();
 
   return (
     <div className={styles.dash}>

@@ -3,25 +3,42 @@
   .navbar {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
     padding: 20px;
-    .logo {
-      font-size: 28px;
-      font-weight: bold;
-      color: white;
-      margin-right: 40px;
-    }
+
     // #182b44
     .navLinks {
       display: flex;
       align-items: center;
       justify-content: flex-start;
       gap: 20px;
+      .logo {
+        font-size: 28px;
+        font-weight: bold;
+        color: white;
+        margin-right: 20px;
+      }
       a {
         text-decoration: none;
         color: #333;
         font-weight: 500;
         color: white;
+        cursor: pointer;
+        &:hover {
+          color: #c4a207;
+        }
+      }
+    }
+    .rightSideNav {
+      button {
+        background-color: none;
+        background: none;
+        border: none;
+        text-decoration: none;
+        font-weight: 500;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
         &:hover {
           color: #c4a207;
         }
