@@ -30,12 +30,16 @@
     justify-content: center;
     gap: 30px;
     padding: 40px 0 80px;
-    button {
+    .createBtn,
+    .scannerBtn {
       width: 180px;
       height: 38px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .createBtn {
       background-color: #003f88;

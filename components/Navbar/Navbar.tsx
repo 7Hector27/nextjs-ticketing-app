@@ -32,12 +32,14 @@ const Navbar = () => {
           </Link>
           {!role && <Link href="/about">About</Link>}
           {role && currentPath !== "/dash" && <Link href="/dash">Dash</Link>}
-          {role === "admin" && <Link href="/events">Events</Link>}
+          {role === "admin" && <Link href="/dash/events">Events</Link>}
           {role && <Link href="/dash/scanner"> Scanner</Link>}
         </div>
-        <div className={styles.rightSideNav}>
-          <button onClick={() => logout()}>Log Out</button>
-        </div>
+        {role && (
+          <div className={styles.rightSideNav}>
+            <button onClick={() => logout()}>Log Out</button>
+          </div>
+        )}
       </nav>
     </div>
   );
