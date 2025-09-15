@@ -19,11 +19,13 @@ export default class UserAPI {
     });
     return data;
   }
+
   async authLogin(email: string, password: string) {
-    return fetch(`${this.TableName}/login`, {
+    return fetch(`/api/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
+      credentials: "include",
     });
   }
 }

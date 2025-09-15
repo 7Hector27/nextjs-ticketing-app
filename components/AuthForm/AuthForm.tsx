@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/router";
-
+import Loader from "../Loader";
 import UserAPI from "@/lib/UserAPI";
 
 import styles from "./AuthForm.module.scss";
@@ -10,6 +10,7 @@ const AuthForm = () => {
   const [isLogIn, setIsLogIn] = useState(true);
   const userAPI = new UserAPI();
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -46,7 +47,6 @@ const AuthForm = () => {
       return response.json(); // return token payload
     },
     onSuccess: (data) => {
-      document.cookie = `authToken=${data.token}; path=/; secure; samesite=strict`;
       setIsLogIn(true);
       router.push("/dash");
     },
@@ -57,6 +57,8 @@ const AuthForm = () => {
 
   const handleLogIn = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
+
     const form = e.currentTarget;
     const formData = new FormData(form);
     const email = formData.get("email") as string;
@@ -87,8 +89,8 @@ const AuthForm = () => {
               className={styles.input}
               required
             />
-            <button type="submit" className={styles.button}>
-              Log In
+            <button type="submit" disabled={loading} className={styles.button}>
+              {loading ? <Loader /> : "Sign In"}
             </button>
             <p>
               Don`t have an account?{" "}

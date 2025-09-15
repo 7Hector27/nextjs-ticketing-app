@@ -1,0 +1,64 @@
+.dash {
+  background-color: #fdfeff;
+  height: 100vh;
+}
+
+//About Page
+.body {
+  display: flex;
+  flex-direction: column;
+  background: #f9fafb;
+  color: #1f2937;
+  font-family: "Inter", sans-serif;
+  height: 100vh;
+  .header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 80px 0 40px;
+    h2 {
+      font-size: 32px;
+    }
+    p {
+      font-size: 18px;
+    }
+  }
+  .buttonWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    padding: 40px 0 80px;
+    button {
+      width: 180px;
+      height: 38px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .createBtn {
+      background-color: #003f88;
+      color: white;
+      &:hover {
+        background-color: #015abe;
+      }
+    }
+    .scannerBtn {
+      background-color: #f9fafb;
+      color: #003f88;
+      border: 1px solid lightgray;
+      &:hover {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
+  .recentEvents {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    h2 {
+      font-size: 32px;
+    }
+  }
+}

@@ -8,7 +8,7 @@ interface MyJwtPayload {
 }
 
 export async function middleware(req: NextRequest) {
-  const token = req.cookies.get("authToken")?.value;
+  const token = req.cookies.get("token")?.value;
 
   if (!token) {
     return NextResponse.redirect(new URL("/", req.url));
@@ -25,9 +25,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/unauthorized", req.url));
   } catch (error) {
     console.error("JWT verification failed:", error);
-    const res = NextResponse.redirect(new URL("/", req.url));
-    res.cookies.set("authToken", "", { maxAge: 0, path: "/" });
-    return res;
+    return NextResponse.redirect(new URL("/", req.url));
   }
 }
 
