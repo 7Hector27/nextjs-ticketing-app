@@ -8,14 +8,14 @@ const EventForm = () => {
         <h2 className={styles.formHeader}>Create Event</h2>
         <input
           type="text"
-          id="name"
-          name="name"
+          id="title"
+          name="title"
           placeholder="Event Name"
           className={styles.input}
           required
         />
         <input
-          type="text"
+          type="date"
           id="date"
           name="date"
           placeholder="Date "
@@ -23,7 +23,7 @@ const EventForm = () => {
           required
         />
         <input
-          type="text"
+          type="time"
           id="time"
           name="time"
           placeholder="Time"

@@ -12,20 +12,20 @@ export type Event = {
   title: string;
   description: string;
   date: Date;
+  time: Date;
   location: string;
   createdAt: Date;
   updatedAt: Date;
   totalTickets: number;
   availableTickets: number;
   price: number;
-  organizerId: string;
   featured?: boolean;
 };
 
 export type Ticket = {
-  id: string;
+  ticketId: string;
   eventId: string;
-  userId: string;
+  userId?: string;
   purchaseDate: Date;
   price: number;
   qrCodeData: string;

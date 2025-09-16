@@ -27,10 +27,12 @@ const AuthForm = () => {
         form.reset();
       } else {
         const data = await response.json();
+        setLoading(false);
         alert(`Error: ${data}`);
       }
     } catch (error) {
       console.error("Error creating user:", error);
+      setLoading(false);
       alert("An error occurred while creating the user.");
     }
   };
