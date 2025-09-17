@@ -4,13 +4,14 @@ import { useRouter } from "next/router";
 
 import Loader from "../ButtonLoader";
 import UserAPI from "@/lib/UserAPI";
-
+import { useUser } from "@/context/UserContext";
 import styles from "./AuthForm.module.scss";
 
 const AuthForm = () => {
   const [isLogIn, setIsLogIn] = useState(true);
   const userAPI = new UserAPI();
   const router = useRouter();
+  const { refetchUser } = useUser();
 
   // --- Sign Up Mutation ---
   const signUpMutation = useMutation({
@@ -34,8 +35,10 @@ const AuthForm = () => {
   const logInMutation = useMutation({
     mutationFn: (data: { email: string; password: string }) =>
       userAPI.authLogin(data.email, data.password),
-    onSuccess: () => {
+    onSuccess: async () => {
       setIsLogIn(true);
+      await refetchUser();
+
       router.push("/dash");
     },
     onError: (error) => {

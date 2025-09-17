@@ -8,23 +8,23 @@ import UserAPI from "@/lib/UserAPI";
 import styles from "./NavBar.module.scss";
 
 const Navbar = () => {
-  const { user, loading } = useUser();
   const router = useRouter();
   const currentPath = router.pathname;
   const userAPI = new UserAPI();
+
+  const { user, loading, setUser, refetchUser } = useUser();
   const { role } = user || {};
   const { mutate: logout } = useMutation({
     mutationFn: () => userAPI.logOut(),
-    onSuccess: () => {
+    onSuccess: async () => {
+      await refetchUser();
       router.push("/");
     },
     onError: (err) => {
       alert(err.message || "Error logging out");
     },
   });
-
   if (loading) return;
-
   return (
     <div className={styles.navBarWrapper}>
       <nav className={styles.navbar}>

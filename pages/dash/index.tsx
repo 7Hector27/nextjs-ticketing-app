@@ -10,6 +10,7 @@ import FullPageLoader from "@/components/FullPageLoader";
 const Dashboard = () => {
   const { user, loading } = useUser();
   const { name } = user || {};
+  if (loading) return;
 
   return (
     <div className={styles.dash}>
