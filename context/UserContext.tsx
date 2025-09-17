@@ -30,7 +30,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${API_URL}/auth/getAuthenticatedUser  `, { credentials: "include" })
+    fetch(`${API_URL}/users/auth`, {
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+    })
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         setUser(data);
@@ -39,6 +42,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       .catch(() => {
         setUser(null);
         setLoading(false);
+        alert("something went wrong getting user");
       });
   }, []);
 

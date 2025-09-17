@@ -2,17 +2,17 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useMutation } from "@tanstack/react-query";
 
-import { useUser } from "@/lib/hooks/useUserRole";
+import { useUser } from "@/context/UserContext";
 import UserAPI from "@/lib/UserAPI";
 
 import styles from "./NavBar.module.scss";
 
 const Navbar = () => {
-  const { role } = useUser();
+  const { user, loading } = useUser();
   const router = useRouter();
   const currentPath = router.pathname;
   const userAPI = new UserAPI();
-
+  const { role } = user || {};
   const { mutate: logout } = useMutation({
     mutationFn: () => userAPI.logOut(),
     onSuccess: () => {
@@ -22,6 +22,8 @@ const Navbar = () => {
       alert(err.message || "Error logging out");
     },
   });
+
+  if (loading) return;
 
   return (
     <div className={styles.navBarWrapper}>
@@ -35,11 +37,11 @@ const Navbar = () => {
           {role === "admin" && <Link href="/dash/events">Events</Link>}
           {role && <Link href="/dash/scanner"> Scanner</Link>}
         </div>
-        {
+        {role && (
           <div className={styles.rightSideNav}>
             <button onClick={() => logout()}>Log Out</button>
           </div>
-        }
+        )}
       </nav>
     </div>
   );

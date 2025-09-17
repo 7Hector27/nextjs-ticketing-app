@@ -1,11 +1,11 @@
 import React from "react";
 
-import styles from "./Loader.module.scss";
+import styles from "./ButtonLoader.module.scss";
 
 const Loader = () => {
   return (
     <div className={styles.loaderWrapper}>
-      <div className={styles.spinner} />
+      <span className={styles.spinner} />
     </div>
   );
 };

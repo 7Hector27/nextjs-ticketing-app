@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 
-import Loader from "../Loader";
-
+import Loader from "../ButtonLoader";
 import UserAPI from "@/lib/UserAPI";
 
 import styles from "./AuthForm.module.scss";
@@ -12,33 +11,26 @@ const AuthForm = () => {
   const [isLogIn, setIsLogIn] = useState(true);
   const userAPI = new UserAPI();
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
 
-  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-    const name = formData.get("fullName") as string;
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-    try {
-      const response = await userAPI.createUser(name, email, password);
+  // --- Sign Up Mutation ---
+  const signUpMutation = useMutation({
+    mutationFn: (data: { name: string; email: string; password: string }) =>
+      userAPI.createUser(data.name, data.email, data.password),
+    onSuccess: async (response) => {
       if (response.ok) {
         alert("User created successfully!");
         setIsLogIn(true);
-        form.reset();
       } else {
         const data = await response.json();
-        setLoading(false);
         alert(`Error: ${data}`);
       }
-    } catch (error) {
-      console.error("Error creating user:", error);
-      setLoading(false);
-      alert("An error occurred while creating the user.");
-    }
-  };
+    },
+    onError: (error) => {
+      alert(error.message || "An error occurred while creating the user.");
+    },
+  });
 
+  // --- Log In Mutation ---
   const logInMutation = useMutation({
     mutationFn: (data: { email: string; password: string }) =>
       userAPI.authLogin(data.email, data.password),
@@ -47,26 +39,31 @@ const AuthForm = () => {
       router.push("/dash");
     },
     onError: (error) => {
-      setLoading(false);
-      alert(error.message || "An error occurred while logging in.");
+      console.error(error.message || "An error occurred while logging in.");
     },
   });
 
-  const handleLogIn = (e: React.FormEvent<HTMLFormElement>) => {
+  // --- Handlers ---
+  const handleSignUp = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-
-    const form = e.currentTarget;
-    const formData = new FormData(form);
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get("fullName") as string;
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
+    signUpMutation.mutate({ name, email, password });
+  };
 
+  const handleLogIn = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
     logInMutation.mutate({ email, password });
   };
 
   return (
     <div className={styles.authForm}>
-      <h2 className={styles.title}>Access your tickets, anytime, anywhere. </h2>
+      <h2 className={styles.title}>Access your tickets, anytime, anywhere.</h2>
       <div className={styles.formWrapper}>
         {isLogIn ? (
           <form onSubmit={handleLogIn} className={styles.form}>
@@ -86,12 +83,17 @@ const AuthForm = () => {
               className={styles.input}
               required
             />
-            <button type="submit" disabled={loading} className={styles.button}>
-              {loading ? <Loader /> : "Sign In"}
+            <button
+              type="submit"
+              disabled={logInMutation.isPending}
+              className={styles.button}
+            >
+              {logInMutation.isPending ? <Loader /> : "Sign In"}
             </button>
             <p>
-              Don`t have an account?{" "}
+              Don’t have an account?{" "}
               <button
+                type="button"
                 onClick={() => setIsLogIn(false)}
                 className={styles.formSwitchBtn}
               >
@@ -125,16 +127,21 @@ const AuthForm = () => {
               className={styles.input}
               required
             />
-            <button type="submit" className={styles.button}>
-              Sign Up
+            <button
+              type="submit"
+              disabled={signUpMutation.isPending}
+              className={styles.button}
+            >
+              {signUpMutation.isPending ? <Loader /> : "Sign Up"}
             </button>
             <p>
               Already have an account?{" "}
               <button
+                type="button"
                 onClick={() => setIsLogIn(true)}
                 className={styles.formSwitchBtn}
               >
-                Log In{" "}
+                Log In
               </button>
             </p>
           </form>

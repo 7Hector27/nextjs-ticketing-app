@@ -19,13 +19,14 @@ export default async function handler(
         ? { Authorization: req.headers.authorization }
         : {}),
     },
-    credentials: "include",
-    body: ["POST", "PUT", "PATCH"].includes(req.method || "")
-      ? JSON.stringify(req.body)
-      : undefined,
+    // only send body for non-GET
+    body:
+      req.method && ["POST", "PUT", "PATCH"].includes(req.method)
+        ? JSON.stringify(req.body)
+        : undefined,
   });
 
-  // Forward *all* Set-Cookie headers back to browser
+  // forward all cookies
   const setCookie = response.headers.get("set-cookie");
   if (setCookie) {
     res.setHeader("Set-Cookie", setCookie);
@@ -34,7 +35,8 @@ export default async function handler(
   const text = await response.text();
   try {
     res.status(response.status).json(JSON.parse(text));
-  } catch {
+  } catch (err) {
+    console.error("Proxy error:", err);
     res.status(response.status).send(text);
   }
 }
