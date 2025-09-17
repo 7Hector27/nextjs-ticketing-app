@@ -35,11 +35,11 @@ const Navbar = () => {
           {role === "admin" && <Link href="/dash/events">Events</Link>}
           {role && <Link href="/dash/scanner"> Scanner</Link>}
         </div>
-        {role && (
+        {
           <div className={styles.rightSideNav}>
             <button onClick={() => logout()}>Log Out</button>
           </div>
-        )}
+        }
       </nav>
     </div>
   );

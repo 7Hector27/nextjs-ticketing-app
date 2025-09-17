@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import * as jwt from "jwt-decode";
+import jwtDecode from "jwt-decode"; // v3 has a default export
 
 type JwtPayload = {
   userId: string;
@@ -30,11 +30,20 @@ export function useUser() {
 
     const token = document.cookie
       .split("; ")
-      .find((row) => row.startsWith("token="))
+      .find((row) => row.startsWith("authToken="))
       ?.split("=")[1];
+
     if (token) {
       try {
-        const decoded = jwt.jwtDecode<JwtPayload>(token);
+        const decoded = jwtDecode<JwtPayload>(token);
+
+        // check for expiration (optional)
+        const now = Math.floor(Date.now() / 1000);
+        if (decoded.exp && decoded.exp < now) {
+          console.warn("JWT expired");
+          return;
+        }
+
         setUser({
           userId: decoded.userId,
           email: decoded.email,

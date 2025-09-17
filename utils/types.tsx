@@ -7,19 +7,19 @@ export type User = {
   updatedAt: Date;
 };
 
-export type Event = {
-  id: string;
+export type EventType = {
+  id?: string;
   title: string;
   description: string;
   date: Date;
-  time: Date;
   location: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
   totalTickets: number;
-  availableTickets: number;
+  availableTickets?: number;
   price: number;
   featured?: boolean;
+  imageUrl?: string;
 };
 
 export type Ticket = {

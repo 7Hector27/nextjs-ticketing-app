@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/router";
+
 import Loader from "../Loader";
+
 import UserAPI from "@/lib/UserAPI";
 
 import styles from "./AuthForm.module.scss";
@@ -38,21 +40,14 @@ const AuthForm = () => {
   };
 
   const logInMutation = useMutation({
-    mutationFn: async (data: { email: string; password: string }) => {
-      const response = await userAPI.authLogin(data.email, data.password);
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to log in");
-      }
-
-      return response.json(); // return token payload
-    },
-    onSuccess: (data) => {
+    mutationFn: (data: { email: string; password: string }) =>
+      userAPI.authLogin(data.email, data.password),
+    onSuccess: () => {
       setIsLogIn(true);
       router.push("/dash");
     },
     onError: (error) => {
+      setLoading(false);
       alert(error.message || "An error occurred while logging in.");
     },
   });

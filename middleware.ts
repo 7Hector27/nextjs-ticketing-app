@@ -1,14 +1,8 @@
 import { NextResponse, NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
-interface MyJwtPayload {
-  role?: string;
-  email?: string;
-  userId?: string;
-}
-
 export async function middleware(req: NextRequest) {
-  const token = req.cookies.get("token")?.value;
+  const token = req.cookies.get("authToken")?.value; // ✅ use cookie
 
   if (!token) {
     return NextResponse.redirect(new URL("/", req.url));

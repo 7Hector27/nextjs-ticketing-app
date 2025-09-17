@@ -6,7 +6,6 @@ export default async function handler(
 ) {
   const { path } = req.query;
 
-  // Build the target URL to your API Gateway
   const targetUrl = `${process.env.NEXT_PUBLIC_API_GATEWAY_URL}/${
     Array.isArray(path) ? path.join("/") : path
   }`;
@@ -15,23 +14,27 @@ export default async function handler(
     method: req.method,
     headers: {
       "Content-Type": "application/json",
-      // Forward Authorization or other headers if needed
+      ...(req.headers.cookie ? { cookie: req.headers.cookie } : {}),
       ...(req.headers.authorization
         ? { Authorization: req.headers.authorization }
         : {}),
     },
+    credentials: "include",
     body: ["POST", "PUT", "PATCH"].includes(req.method || "")
       ? JSON.stringify(req.body)
       : undefined,
   });
 
-  // Forward Set-Cookie header
+  // Forward *all* Set-Cookie headers back to browser
   const setCookie = response.headers.get("set-cookie");
   if (setCookie) {
     res.setHeader("Set-Cookie", setCookie);
   }
 
-  // Forward status + body
-  const data = await response.text(); // keep it raw (could be JSON or not)
-  res.status(response.status).send(data);
+  const text = await response.text();
+  try {
+    res.status(response.status).json(JSON.parse(text));
+  } catch {
+    res.status(response.status).send(text);
+  }
 }

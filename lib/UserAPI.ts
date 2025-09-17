@@ -1,3 +1,4 @@
+import { API_URL } from "@/utils/client";
 export default class UserAPI {
   private TableName = process.env.NEXT_PUBLIC_API_GATEWAY_URL!;
 
@@ -21,18 +22,26 @@ export default class UserAPI {
   }
 
   async authLogin(email: string, password: string) {
-    return fetch(`/api/login`, {
+    const res = await fetch(`${API_URL}/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
       credentials: "include",
     });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.message || "Failed to log in");
+    }
+
+    const data = await res.json();
+    return data;
   }
 
   async logOut() {
     const res = await fetch(`/api/logout`, {
       method: "POST",
-      credentials: "include", // important so browser applies Set-Cookie
+      credentials: "include",
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
