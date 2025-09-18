@@ -20,7 +20,7 @@ const Dashboard = () => {
       ) : (
         <div className={styles.body}>
           <div className={styles.header}>
-            <h2>Welcome Back {name}</h2>
+            <h2>Welcome Back {name && name.first}</h2>
             <p> You have 3 upcoming events this month.</p>
           </div>
           <div className={styles.buttonWrapper}>

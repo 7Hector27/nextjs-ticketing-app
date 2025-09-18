@@ -15,8 +15,18 @@ const AuthForm = () => {
 
   // --- Sign Up Mutation ---
   const signUpMutation = useMutation({
-    mutationFn: (data: { name: string; email: string; password: string }) =>
-      userAPI.createUser(data.name, data.email, data.password),
+    mutationFn: (data: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      password: string;
+    }) =>
+      userAPI.createUser(
+        data.firstName,
+        data.lastName,
+        data.email,
+        data.password
+      ),
     onSuccess: async (response) => {
       if (response.ok) {
         alert("User created successfully!");
@@ -50,10 +60,11 @@ const AuthForm = () => {
   const handleSignUp = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const name = formData.get("fullName") as string;
+    const firstName = formData.get("firstName") as string;
+    const lastName = formData.get("lastName") as string;
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
-    signUpMutation.mutate({ name, email, password });
+    signUpMutation.mutate({ firstName, lastName, email, password });
   };
 
   const handleLogIn = (e: React.FormEvent<HTMLFormElement>) => {
@@ -108,9 +119,17 @@ const AuthForm = () => {
           <form onSubmit={handleSignUp} className={styles.form}>
             <input
               type="text"
-              id="fullName"
-              name="fullName"
-              placeholder="Full Name"
+              id="firstName"
+              name="firstName"
+              placeholder="First Name"
+              className={styles.input}
+              required
+            />{" "}
+            <input
+              type="text"
+              id="lastName"
+              name="lastName"
+              placeholder="Last Name"
               className={styles.input}
               required
             />

@@ -11,7 +11,10 @@ type UserState = {
   userId: string | null;
   email: string | null;
   role: string | null;
-  name: string | null;
+  name: {
+    first: string;
+    last: string;
+  } | null;
 };
 
 type UserContextType = {
@@ -54,7 +57,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    refetchUser(); // run once on mount
+    refetchUser();
   }, []);
 
   return (

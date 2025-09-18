@@ -12,11 +12,16 @@ export default class UserAPI {
     }
   }
 
-  async createUser(name: string, email: string, password: string) {
+  async createUser(
+    firstName: string,
+    lastName: string,
+    email: string,
+    password: string
+  ) {
     const data = await fetch(`${this.TableName}/users`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({ firstName, lastName, email, password }),
     });
     return data;
   }
