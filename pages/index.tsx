@@ -2,6 +2,7 @@ import React from "react";
 
 import Navbar from "../components/Navbar/Navbar";
 import AuthForm from "@/components/AuthForm";
+import FeaturedDashEvent from "@/components/FeaturedDashEvent";
 
 import { useUser } from "@/context/UserContext";
 
@@ -14,6 +15,7 @@ const Home = () => {
     <div className={styles.home}>
       <Navbar />
       {!role && <AuthForm />}
+      <FeaturedDashEvent />
     </div>
   );
 };

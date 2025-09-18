@@ -31,8 +31,8 @@ const EventForm = () => {
     const price = formData.get("price") as string;
     const totalTickets = formData.get("totalTickets") as string;
     const featured = formData.get("featured") === "on";
-    const dateStr = formData.get("date") as string; // "2025-09-16"
-    const timeStr = formData.get("time") as string; // "20:00"
+    const dateStr = formData.get("date") as string;
+    const timeStr = formData.get("time") as string;
 
     // combine into one Date
     const eventDateTime = new Date(`${dateStr}T${timeStr}:00Z`);
