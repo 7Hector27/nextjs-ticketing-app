@@ -9,7 +9,6 @@ import styles from "./NavBar.module.scss";
 
 const Navbar = () => {
   const router = useRouter();
-  const currentPath = router.pathname;
   const userAPI = new UserAPI();
 
   const { user, loading, setUser, refetchUser } = useUser();
