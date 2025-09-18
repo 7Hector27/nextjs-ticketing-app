@@ -4,11 +4,21 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { path } = req.query;
+  const { path, ...restQuery } = req.query;
 
-  const targetUrl = `${process.env.NEXT_PUBLIC_API_GATEWAY_URL}/${
+  // Build base target
+  let targetUrl = `${process.env.NEXT_PUBLIC_API_GATEWAY_URL}/${
     Array.isArray(path) ? path.join("/") : path
   }`;
+
+  // Append query string if any
+  const queryString = new URLSearchParams(
+    Object.entries(restQuery).map(([k, v]) => [k, String(v)])
+  ).toString();
+
+  if (queryString) {
+    targetUrl += `?${queryString}`;
+  }
 
   const response = await fetch(targetUrl, {
     method: req.method,
@@ -19,14 +29,12 @@ export default async function handler(
         ? { Authorization: req.headers.authorization }
         : {}),
     },
-    // only send body for non-GET
     body:
       req.method && ["POST", "PUT", "PATCH"].includes(req.method)
         ? JSON.stringify(req.body)
         : undefined,
   });
 
-  // forward all cookies
   const setCookie = response.headers.get("set-cookie");
   if (setCookie) {
     res.setHeader("Set-Cookie", setCookie);
@@ -35,8 +43,7 @@ export default async function handler(
   const text = await response.text();
   try {
     res.status(response.status).json(JSON.parse(text));
-  } catch (err) {
-    console.error("Proxy error:", err);
+  } catch {
     res.status(response.status).send(text);
   }
 }

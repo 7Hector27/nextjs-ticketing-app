@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.87.4",
+    "date-fns": "^4.1.0",
     "jose": "^6.1.0",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^3.1.2",

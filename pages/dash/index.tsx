@@ -4,8 +4,10 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import { useUser } from "@/context/UserContext";
 
-import styles from "./dash.module.scss";
 import FullPageLoader from "@/components/FullPageLoader";
+import FeaturedDashEvent from "@/components/FeaturedDashEvent";
+
+import styles from "./dash.module.scss";
 
 const Dashboard = () => {
   const { user, loading } = useUser();
@@ -31,9 +33,7 @@ const Dashboard = () => {
               Go to Scanner
             </Link>
           </div>
-          <div className={styles.recentEvents}>
-            <h2>Recent Events</h2>
-          </div>
+          <FeaturedDashEvent />
         </div>
       )}
     </div>

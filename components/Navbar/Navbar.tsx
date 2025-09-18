@@ -33,7 +33,7 @@ const Navbar = () => {
             Entrava
           </Link>
           {!role && <Link href="/about">About</Link>}
-          {role && currentPath !== "/dash" && <Link href="/dash">Dash</Link>}
+          {role && <Link href="/dash">Dash</Link>}
           {role === "admin" && <Link href="/dash/events">Events</Link>}
           {role && <Link href="/dash/scanner"> Scanner</Link>}
         </div>
