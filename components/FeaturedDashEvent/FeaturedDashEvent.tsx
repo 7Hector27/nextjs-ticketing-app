@@ -1,25 +1,26 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Image from "next/image";
 import { format } from "date-fns";
+import { useQuery } from "@tanstack/react-query";
 
 import EventAPI from "@/lib/EventAPI";
 import { EventType } from "@/utils/types";
 
 import styles from "./FeaturedDashEvent.module.scss";
+import FullPageLoader from "../FullPageLoader";
 
 const FeaturedDashEvent = () => {
-  const [featuredEvents, setFeaturedEvents] = useState([]);
-
   const eventApi = new EventAPI();
 
-  const getEvents = async () => {
-    const events = await eventApi.getEvents({ featured: true, limit: 3 });
-    setFeaturedEvents(events.items);
-  };
+  const { data: featuredEvents, isLoading } = useQuery({
+    queryKey: ["featuredEvents"],
+    queryFn: async () => {
+      const res = await eventApi.getEvents({ featured: true, limit: 3 });
+      return res.items;
+    },
+  });
 
-  useEffect(() => {
-    getEvents();
-  }, []);
+  if (isLoading) return <FullPageLoader />;
 
   return (
     <div className={styles.featuredDashEvents}>
