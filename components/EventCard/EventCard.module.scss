@@ -1,33 +1,38 @@
 .eventCard {
-  width: 250px;
-  height: 275px;
+  width: 350px;
+  height: 150px;
   border-radius: 10px;
   border: 1px solid #ddc09f;
   box-sizing: border-box;
   background-color: #faf8f6;
-  padding: 12px 15px;
+  padding: 10px 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
   .imgWrapper {
-    width: 100%;
-    height: 120px;
+    width: 125px;
+    height: 110px;
     overflow: hidden;
     .img {
-      width: 100%;
+      width: 125px;
       border-radius: 10px;
       height: 100%;
     }
   }
   .cardContent {
-    padding: 10px 10px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
+    width: 180px;
     .title,
     .tickets,
-    .date {
+    .date,
+    .location {
       font-size: 16px;
       padding-bottom: 8px;
-      height: 35px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -35,14 +40,81 @@
     .title {
       justify-content: flex-start;
     }
+    .location {
+      display: -webkit-box;
+      -webkit-line-clamp: 1; // number of lines before truncating
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      height: 15px;
+    }
     .date,
-    .tickets {
+    .tickets,
+    .location {
       font-size: 14px;
       font-weight: 600;
     }
+    .tickets {
+      display: flex;
+      flex-direction: row;
+      gap: 5px;
+      span {
+        background-color: #f1e1d3;
+        padding: 4px;
+        border-radius: 4px;
+      }
+    }
   }
 }
+
 @media (min-width: 768px) {
+  .eventCard {
+    width: 650px;
+    height: 175px;
+    padding: 10px 15px;
+    gap: 10px;
+    justify-content: flex-start;
+    .imgWrapper {
+      width: 250px;
+      height: 145px;
+      overflow: hidden;
+      .img {
+        width: 250px;
+        border-radius: 10px;
+        height: 100%;
+      }
+    }
+    .cardContent {
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      width: 350px;
+      height: 145px;
+      .title,
+      .tickets,
+      .date,
+      .location {
+        font-size: 22px;
+      }
+      .location {
+        display: block;
+        -webkit-line-clamp: unset;
+        -webkit-box-orient: unset;
+        overflow: visible;
+        height: auto;
+      }
+      .date,
+      .tickets,
+      .location {
+        font-size: 16px;
+      }
+      .tickets {
+        display: flex;
+        flex-direction: row;
+      }
+    }
+  }
 }
 
 @media (min-width: 1248px) {

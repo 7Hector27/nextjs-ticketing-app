@@ -29,6 +29,23 @@ export default class EventAPI {
     }
   }
 
+  async getEventById(id: string) {
+    try {
+      const res = await fetch(`${API_URL}/events/${id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+
+      return res.json();
+    } catch (err) {
+      console.error("createEvent error:", err);
+      return { error: err };
+    }
+  }
+
   async createEvent(event: EventType) {
     try {
       const res = await fetch(`${API_URL}/events`, {

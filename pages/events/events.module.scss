@@ -4,18 +4,44 @@
   overflow: auto;
   padding-bottom: 3rem;
   color: #2d2a24;
-  .eventHeader {
-    h2 {
-      font-size: 36px;
-    }
-    p {
-      font-size: 18px;
-    }
-  }
-  .content {
-    display: flex;
+
+  .body {
+    width: 350px;
+    padding: 10px;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    margin: 0 auto;
+    .eventHeader {
+      padding-top: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding-bottom: 20px;
+      h2 {
+        font-size: 36px;
+      }
+      p {
+        font-size: 16px;
+      }
+    }
+    .content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
   }
+}
+@media (min-width: 768px) {
+  .events {
+    .body {
+      width: 650px;
+    }
+  }
+}
+
+@media (min-width: 1248px) {
 }

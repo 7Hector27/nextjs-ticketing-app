@@ -29,7 +29,7 @@ const FeaturedDashEvent = ({
   });
 
   if (isLoading) return <FullPageLoader />;
-
+  console.log(featuredEvents);
   return (
     <div className={styles.featuredDashEvents}>
       <h2>Featured Events</h2>
