@@ -20,19 +20,19 @@
     width: 325px;
     gap: 5px;
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
-    background-color: hsl(30, 50%, 98%);
+    background-color: #faf8f6;
     .formHeader {
       font-size: 20px;
     }
     .input {
       background-color: white;
-      border: 1px solid #979797;
+      border: 1px solid #2d2a24;
       border-radius: 4px;
       height: 45px;
       padding: 8px;
       font-size: 16px;
       font-family: hind;
-      color: #181818;
+      color: #2d2a24;
     }
     .textArea {
       min-height: 100px;
@@ -42,18 +42,19 @@
       font-size: 16px;
       font-family: hind;
       cursor: pointer;
-      color: #181818;
+      color: #2d2a24;
+      border-color: #2d2a24;
     }
     .button {
       width: 130px;
       height: 30px;
       border: none;
       border-radius: 6px;
-      background-color: #003f88;
+      background-color: #956d37;
       color: white;
       cursor: pointer;
       &:hover {
-        background-color: #004ea7;
+        background-color: #7a572d;
       }
     }
   }

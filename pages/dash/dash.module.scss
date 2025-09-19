@@ -1,11 +1,11 @@
 .dash {
-  background-color: #fdfeff;
+  background-color: #f1e1d3;
   height: 100vh;
   .body {
     display: flex;
     flex-direction: column;
-    background: #f9fafb;
-    color: #1f2937;
+    background-color: #f1e1d3;
+    color: #2d2a24;
     font-family: "Inter", sans-serif;
     height: 100%;
     overflow: auto;
@@ -45,16 +45,16 @@
         justify-content: center;
       }
       .createBtn {
-        background-color: #003f88;
+        background-color: #956d37;
         color: white;
         &:hover {
-          background-color: #015abe;
+          background-color: #7a572d;
         }
       }
       .scannerBtn {
         background-color: #f9fafb;
-        color: #003f88;
-        border: 1px solid lightgray;
+        color: #2d2a24;
+        border: 1px solid #e9d6c5;
         &:hover {
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }

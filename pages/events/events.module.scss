@@ -1,7 +1,21 @@
 .events {
-  background-color: #fdfeff;
+  background-color: #f1e1d3;
   height: 100%;
   overflow: auto;
   padding-bottom: 3rem;
-  color: #181818;
+  color: #2d2a24;
+  .eventHeader {
+    h2 {
+      font-size: 36px;
+    }
+    p {
+      font-size: 18px;
+    }
+  }
+  .content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
 }

@@ -25,7 +25,10 @@ const Event = () => {
   return (
     <div className={styles.events}>
       <Navbar />
-      <h2>Events</h2>
+      <div className={styles.eventHeader}>
+        <h2>Events</h2>
+        <p>Browse through our list of exciting upcoming events.</p>
+      </div>
       <div className={styles.content}>
         {featuredEvents?.map((event: EventType, index: number) => {
           return <EventCard event={event} key={index} />;
