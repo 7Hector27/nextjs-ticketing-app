@@ -1,6 +1,8 @@
 .home {
   background-color: #fdfeff;
   height: 100vh;
+  overflow: auto;
+  padding-bottom: 3rem;
 }
 
 //About Page
@@ -43,4 +45,9 @@
       }
     }
   }
+}
+@media (min-width: 768px) {
+}
+
+@media (min-width: 1248px) {
 }

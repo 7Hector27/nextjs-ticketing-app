@@ -67,6 +67,10 @@ const EventForm = () => {
 
   return (
     <div className={styles.eventForm}>
+      <div className={styles.header}>
+        <h2>Events</h2>
+        <p>Create and manage your events.</p>
+      </div>
       <form onSubmit={handleSubmit} className={styles.form}>
         <h2 className={styles.formHeader}>Create Event</h2>
         <input

@@ -58,7 +58,7 @@ const FeaturedDashEvent = ({
                   {datePart}, {timePart}
                 </p>
                 <p className={styles.tickets}>
-                  {availableTickets} /{totalTickets} tickets
+                  {availableTickets} /{totalTickets} Tickets
                 </p>
               </div>
             </div>

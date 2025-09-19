@@ -17,10 +17,6 @@ const Events = () => {
     <div className={styles.events}>
       <Navbar />
       <div className={styles.body}>
-        <div className={styles.header}>
-          <h2>Events</h2>
-          <p>Create and manage your events.</p>
-        </div>
         <EventForm />
         <div className={styles.eventsList}></div>
       </div>

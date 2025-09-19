@@ -8,7 +8,7 @@ export type User = {
 };
 
 export type EventType = {
-  id?: string;
+  eventId?: string;
   title: string;
   description: string;
   date: Date;
