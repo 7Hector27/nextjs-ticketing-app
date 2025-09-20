@@ -32,7 +32,7 @@ const Dashboard = () => {
               Go to Scanner
             </Link>
           </div>
-          <FeaturedDashEvent />
+          <FeaturedDashEvent disableRedirect />
         </div>
       )}
     </div>

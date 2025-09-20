@@ -6,11 +6,12 @@ import { format } from "date-fns";
 
 import EventAPI from "@/lib/EventAPI";
 import FullPageLoader from "@/components/FullPageLoader";
+import Navbar from "@/components/Navbar";
 
 import { EventType } from "@/utils/types";
+import { formatToUSD } from "@/utils/client";
 
 import styles from "./index.module.scss";
-import Navbar from "@/components/Navbar";
 
 export default function EventDetailPage() {
   const router = useRouter();
@@ -70,14 +71,43 @@ export default function EventDetailPage() {
           <div className={styles.cardContent}>
             <h3 className={styles.title}>{title}</h3>
             <p className={styles.date}>
+              <Image
+                src={"/images/calendar.png"}
+                width={25}
+                height={25}
+                alt="calendarIcon"
+              />
               {datePart}, {timePart}
             </p>
-            <p className={styles.location}>{location}</p>
+            <p className={styles.location}>
+              <Image
+                src={"/images/pin.png"}
+                width={25}
+                height={25}
+                alt="pinIcon"
+              />
+              {location}
+            </p>
             <p className={styles.tickets}>
+              <Image
+                src={"/images/ticket.png"}
+                width={25}
+                height={25}
+                alt="ticketIcon"
+              />
+
               <span>
                 {availableTickets} /{totalTickets}
               </span>
-              <span> ${price}</span>
+            </p>
+            <p className={styles.tickets}>
+              <Image
+                src={"/images/dollarSign.png"}
+                width={25}
+                height={25}
+                alt="dollarSignIcon"
+              />
+              {formatToUSD(price)}
             </p>
             <div className={styles.about}>
               <h2>About</h2>
@@ -87,39 +117,40 @@ export default function EventDetailPage() {
         </div>
 
         <form onSubmit={() => {}} className={styles.purchaseForm}>
+          <h2 className={styles.formHeader}>Ticket Purchase</h2>
+          <label>Number of Tickets</label>
           <input
             type="text"
             id="numberOfTickets"
             name="numberOfTickets"
-            placeholder="Number of Tickets"
             className={styles.input}
             required
           />
+          <label>First Name</label>
           <input
             type="text"
             id="firstName"
             name="firstName"
-            placeholder="First Name"
             className={styles.input}
             required
           />
+          <label>Last Name</label>
           <input
             type="text"
             id="lastName"
             name="lastName"
-            placeholder="Last Name"
             className={styles.input}
             required
           />
+          <label>Email</label>
           <input
             type="text"
             id="email"
             name="email"
-            placeholder="Email"
             className={styles.input}
             required
           />
-          <button>Buy Ticket</button>
+          <button className={styles.button}>Buy Ticket</button>
         </form>
       </div>
     </div>

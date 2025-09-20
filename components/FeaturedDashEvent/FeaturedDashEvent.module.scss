@@ -4,6 +4,7 @@
   align-items: center;
   justify-content: center;
   color: #2d2a24;
+
   > h2 {
     padding-bottom: 20px;
   }
@@ -18,6 +19,13 @@
       border: 1px solid #2d2a24;
       box-sizing: border-box;
       background-color: #faf8f6;
+      cursor: pointer;
+      &:hover {
+        border-color: #956d37; // your primary brass
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+        transform: translateY(-2px);
+        transition: all 0.2s ease-in-out;
+      }
       .imgWrapper {
         width: 100%;
         height: 150px;
@@ -35,6 +43,7 @@
         flex-direction: column;
         justify-content: center;
         align-items: flex-start;
+
         .title,
         .tickets,
         .date {

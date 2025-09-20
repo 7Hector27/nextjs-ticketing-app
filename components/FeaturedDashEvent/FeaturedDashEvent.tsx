@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { format } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/router";
 
 import FullPageLoader from "../FullPageLoader";
 
@@ -13,12 +14,15 @@ import styles from "./FeaturedDashEvent.module.scss";
 
 type FeaturedDashEventProps = {
   viewAllHref?: string;
+  disableRedirect?: boolean;
 };
 
 const FeaturedDashEvent = ({
   viewAllHref = "/events",
+  disableRedirect = false,
 }: FeaturedDashEventProps) => {
   const eventApi = new EventAPI();
+  const router = useRouter();
 
   const { data: featuredEvents, isLoading } = useQuery({
     queryKey: ["featuredEvents"],
@@ -29,20 +33,32 @@ const FeaturedDashEvent = ({
   });
 
   if (isLoading) return <FullPageLoader />;
-  console.log(featuredEvents);
+
   return (
     <div className={styles.featuredDashEvents}>
       <h2>Featured Events</h2>
       <div className={styles.content}>
         {featuredEvents?.map((event: EventType, index: number) => {
-          const { title, date, imageUrl, totalTickets, availableTickets } =
-            event || {};
+          const {
+            eventId,
+            title,
+            date,
+            imageUrl,
+            totalTickets,
+            availableTickets,
+          } = event || {};
           const myDate = new Date(date);
           const datePart = format(myDate, "MMMM dd, yyyy");
           const timePart = format(myDate, "hh:mm a");
 
           return (
-            <div key={index} className={styles.eventCard}>
+            <div
+              key={index}
+              className={styles.eventCard}
+              onClick={() => {
+                !disableRedirect && router.push(`/events/${eventId}`);
+              }}
+            >
               <div className={styles.imgWrapper}>
                 <Image
                   src={imageUrl ? imageUrl : ""}
