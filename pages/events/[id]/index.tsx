@@ -118,38 +118,20 @@ export default function EventDetailPage() {
 
         <form onSubmit={() => {}} className={styles.purchaseForm}>
           <h2 className={styles.formHeader}>Ticket Purchase</h2>
-          <label>Number of Tickets</label>
-          <input
-            type="text"
+          <label htmlFor="numberOfTickets">Number of Tickets</label>
+          <select
             id="numberOfTickets"
             name="numberOfTickets"
             className={styles.input}
             required
-          />
-          <label>First Name</label>
-          <input
-            type="text"
-            id="firstName"
-            name="firstName"
-            className={styles.input}
-            required
-          />
-          <label>Last Name</label>
-          <input
-            type="text"
-            id="lastName"
-            name="lastName"
-            className={styles.input}
-            required
-          />
-          <label>Email</label>
-          <input
-            type="text"
-            id="email"
-            name="email"
-            className={styles.input}
-            required
-          />
+          >
+            {Array.from({ length: 12 }, (_, i) => i + 1).map((num) => (
+              <option key={num} value={num}>
+                {num}
+              </option>
+            ))}
+          </select>
+
           <button className={styles.button}>Buy Ticket</button>
         </form>
       </div>
