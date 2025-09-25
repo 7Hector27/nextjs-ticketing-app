@@ -8,8 +8,8 @@ import EventAPI from "@/lib/EventAPI";
 import FullPageLoader from "@/components/FullPageLoader";
 import Navbar from "@/components/Navbar";
 
-import { EventType } from "@/utils/types";
 import { formatToUSD } from "@/utils/client";
+import OrderAPI from "@/lib/OrderAPI";
 
 import styles from "./index.module.scss";
 

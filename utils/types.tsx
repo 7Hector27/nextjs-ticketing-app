@@ -34,7 +34,7 @@ export type Ticket = {
   status: "valid" | "used";
   seatNumber?: string;
 };
-export interface Order {
+export interface OrderType {
   id: string;
   userId?: string;
   attendeeEmail: string;

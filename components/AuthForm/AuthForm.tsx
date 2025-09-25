@@ -29,8 +29,11 @@ const AuthForm = () => {
       ),
     onSuccess: async (response) => {
       if (response.ok) {
-        alert("User created successfully!");
+        console.log("User created successfully!");
         setIsLogIn(true);
+        // clear form values
+        const form = document.querySelector("form") as HTMLFormElement | null;
+        if (form) form.reset();
       } else {
         const data = await response.json();
         alert(`Error: ${data}`);
@@ -70,8 +73,8 @@ const AuthForm = () => {
   const handleLogIn = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
+    const email = formData.get("login-email") as string;
+    const password = formData.get("login-password") as string;
     logInMutation.mutate({ email, password });
   };
 
@@ -82,17 +85,19 @@ const AuthForm = () => {
         {isLogIn ? (
           <form onSubmit={handleLogIn} className={styles.form}>
             <input
-              type="text"
-              id="email"
-              name="email"
+              key="login-email"
+              type="email"
+              id="login-email"
+              name="login-email"
               placeholder="Email"
               className={styles.input}
               required
             />
             <input
+              key="login-password"
               type="password"
-              id="password"
-              name="password"
+              id="login-password"
+              name="login-password"
               placeholder="Password"
               className={styles.input}
               required
