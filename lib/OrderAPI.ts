@@ -2,7 +2,7 @@ import { OrderType } from "@/utils/types";
 import { API_URL } from "@/utils/client";
 
 export default class OrderAPI {
-  async createorder({
+  async createOrder({
     numberOfTickets,
     eventId,
   }: {

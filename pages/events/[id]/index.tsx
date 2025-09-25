@@ -1,35 +1,72 @@
 import React from "react";
 import { useRouter } from "next/router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import Image from "next/image";
 import { format } from "date-fns";
 
-import EventAPI from "@/lib/EventAPI";
 import FullPageLoader from "@/components/FullPageLoader";
 import Navbar from "@/components/Navbar";
 
-import { formatToUSD } from "@/utils/client";
+import EventAPI from "@/lib/EventAPI";
 import OrderAPI from "@/lib/OrderAPI";
+
+import { formatToUSD } from "@/utils/client";
+import { useUser } from "@/context/UserContext";
 
 import styles from "./index.module.scss";
 
 export default function EventDetailPage() {
   const router = useRouter();
   const { id } = router.query;
-  const eventApi = new EventAPI();
 
-  const { data, isPending } = useQuery({
+  const eventApi = new EventAPI();
+  const orderApi = new OrderAPI();
+  const { user, loading, refetchUser } = useUser();
+
+  // Fetch event data
+  const { data: event, isPending } = useQuery({
     queryKey: ["event", id],
-    queryFn: async () => {
-      if (!id) return null;
-      const data = await eventApi.getEventById(String(id)); // return parsed JSON
-      return data;
-    },
+    queryFn: async () => (id ? eventApi.getEventById(String(id)) : null),
     enabled: !!id,
   });
 
+  // Handle order creation
+  const submitMutation = useMutation({
+    mutationFn: ({
+      numberOfTickets,
+      eventId,
+    }: {
+      numberOfTickets: number;
+      eventId: string;
+    }) => orderApi.createOrder({ numberOfTickets, eventId }),
+    onSuccess: (data) => {
+      console.log(data, "order data");
+    },
+    onError: (error) => {
+      console.error(
+        error.message || "An error occurred while creating the order."
+      );
+      alert(error.message);
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!user) {
+      // create toast component
+      alert("Please sign in to continue with purchase");
+      return;
+    }
+    if (!event) return;
+
+    const formData = new FormData(e.currentTarget);
+    const numberOfTickets = Number(formData.get("numberOfTickets"));
+    submitMutation.mutate({ numberOfTickets, eventId: event.eventId });
+  };
+
+  // Loading and not found states
   if (isPending) return <FullPageLoader />;
-  if (!data) return <p>Event not found</p>;
+  if (!event) return <p>Event not found</p>;
 
   const {
     eventId,
@@ -37,39 +74,35 @@ export default function EventDetailPage() {
     description,
     date,
     location,
-    createdAt,
-    updatedAt,
     totalTickets,
     availableTickets,
     price,
-    featured,
     imageUrl,
-  } = data;
-  const myDate = new Date(date);
-  const datePart = format(myDate, "MMM dd, yyyy");
-  const timePart = format(myDate, "hh:mm a");
+  } = event;
+
+  const eventDate = new Date(date);
+  const datePart = format(eventDate, "MMM dd, yyyy");
+  const timePart = format(eventDate, "hh:mm a");
 
   return (
     <div className={styles.eventDetailsPage}>
       <Navbar />
+
       <div className={styles.body}>
-        <div
-          className={styles.eventCard}
-          onClick={() => {
-            router.push(`/events/${eventId}`);
-          }}
-        >
+        <div className={styles.eventCard}>
           <div className={styles.imgWrapper}>
             <Image
-              src={imageUrl ? imageUrl : ""}
-              alt="eventImg"
+              src={imageUrl || "/images/placeholder.png"}
+              alt={`${title} image`}
               width={200}
               height={200}
               className={styles.img}
             />
           </div>
+
           <div className={styles.cardContent}>
             <h3 className={styles.title}>{title}</h3>
+
             <p className={styles.date}>
               <Image
                 src={"/images/calendar.png"}
@@ -79,6 +112,7 @@ export default function EventDetailPage() {
               />
               {datePart}, {timePart}
             </p>
+
             <p className={styles.location}>
               <Image
                 src={"/images/pin.png"}
@@ -88,6 +122,7 @@ export default function EventDetailPage() {
               />
               {location}
             </p>
+
             <p className={styles.tickets}>
               <Image
                 src={"/images/ticket.png"}
@@ -95,11 +130,11 @@ export default function EventDetailPage() {
                 height={25}
                 alt="ticketIcon"
               />
-
               <span>
-                {availableTickets} /{totalTickets}
+                {availableTickets} / {totalTickets}
               </span>
             </p>
+
             <p className={styles.tickets}>
               <Image
                 src={"/images/dollarSign.png"}
@@ -109,15 +144,17 @@ export default function EventDetailPage() {
               />
               {formatToUSD(price)}
             </p>
+
             <div className={styles.about}>
               <h2>About</h2>
               <p>{description}</p>
             </div>
           </div>
         </div>
-
-        <form onSubmit={() => {}} className={styles.purchaseForm}>
+        {/* Purchase form */}
+        <form onSubmit={handleSubmit} className={styles.purchaseForm}>
           <h2 className={styles.formHeader}>Ticket Purchase</h2>
+
           <label htmlFor="numberOfTickets">Number of Tickets</label>
           <select
             id="numberOfTickets"
@@ -125,14 +162,23 @@ export default function EventDetailPage() {
             className={styles.input}
             required
           >
-            {Array.from({ length: 12 }, (_, i) => i + 1).map((num) => (
+            {Array.from(
+              { length: Math.min(12, availableTickets) },
+              (_, i) => i + 1
+            ).map((num) => (
               <option key={num} value={num}>
                 {num}
               </option>
             ))}
           </select>
 
-          <button className={styles.button}>Buy Ticket</button>
+          <button
+            type="submit"
+            disabled={submitMutation.isPending}
+            className={styles.button}
+          >
+            {submitMutation.isPending ? "Processing..." : "Buy Ticket"}
+          </button>
         </form>
       </div>
     </div>
