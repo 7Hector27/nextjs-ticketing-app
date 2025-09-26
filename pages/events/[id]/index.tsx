@@ -40,7 +40,15 @@ export default function EventDetailPage() {
       eventId: string;
     }) => orderApi.createOrder({ numberOfTickets, eventId }),
     onSuccess: (data) => {
-      console.log(data, "order data");
+      console.log(data.order, "order data");
+      router.push(
+        {
+          pathname: "/orders/confirmation",
+          query: { orderId: data.order.orderId }, // still nice to have
+        },
+        undefined,
+        { shallow: true }
+      );
     },
     onError: (error) => {
       console.error(
