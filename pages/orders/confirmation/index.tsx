@@ -5,13 +5,11 @@ import Image from "next/image";
 import SiteLayout from "@/components/layouts/siteLayout";
 
 import styles from "./index.module.scss";
+
 const Confirmation = () => {
-  // if (!order) {
-  //   return <div>Error</div>;
-  // }
   const router = useRouter();
   const orderId = router.query.orderId;
-  console.log(router.query.orderId, "orderId on confirmation page");
+
   return (
     <SiteLayout>
       <div className={styles.confirmation}>

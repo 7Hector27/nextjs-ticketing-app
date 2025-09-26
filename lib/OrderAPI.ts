@@ -25,4 +25,21 @@ export default class OrderAPI {
       return { error: err };
     }
   }
+
+  async getUserOrdersById(id: string) {
+    try {
+      const res = await fetch(`${API_URL}/orders/${id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+
+      return res.json();
+    } catch (err) {
+      console.error("get Orders error:", err);
+      return { error: err };
+    }
+  }
 }

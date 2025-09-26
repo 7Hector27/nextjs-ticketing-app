@@ -35,10 +35,11 @@ export type Ticket = {
   seatNumber?: string;
 };
 export interface OrderType {
-  id: string;
+  orderId: string;
   userId?: string;
   attendeeEmail: string;
   eventId: string;
   ticketIds: string[];
   createdAt: Date;
+  event?: EventType;
 }

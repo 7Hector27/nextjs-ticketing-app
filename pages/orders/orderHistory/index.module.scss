@@ -1,0 +1,24 @@
+.orderHistory {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  padding-top: 50px;
+  .title {
+    font-size: 36px;
+  }
+  .orderWrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    background-color: #faf8f6;
+    padding: 20px 20px;
+    width: 350px;
+    border: 1px solid #7a572d;
+    height: 140px;
+    gap: 5px;
+    border-radius: 6px;
+  }
+}
