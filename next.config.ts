@@ -24,6 +24,15 @@ const nextConfig: NextConfig = {
     };
     return config;
   },
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination:
+          "https://8yacqfybqc.execute-api.us-east-1.amazonaws.com/:path*", // always forward /api → backend
+      },
+    ];
+  },
 };
 
 export default nextConfig;
