@@ -29,7 +29,7 @@ const Confirmation = () => {
           <div className={styles.buttonWrapper}>
             <button
               onClick={() => {
-                router.push("/orders/orderHistory");
+                router.push("/orders/history");
               }}
             >
               View Order History

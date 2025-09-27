@@ -17,6 +17,7 @@
     "jwt-decode": "^3.1.2",
     "next": "15.5.2",
     "path-browserify": "^1.0.1",
+    "qrcode.react": "^4.2.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "sass": "^1.92.1"

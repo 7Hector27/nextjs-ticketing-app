@@ -34,11 +34,15 @@ const OrderHistory = () => {
     return <FullPageLoader />;
   }
 
+  if (!data) {
+    return <div>...loading</div>;
+  }
+
   return (
     <SiteLayout>
       <div className={styles.orderHistory}>
         <h2 className={styles.title}>Order History</h2>
-        {data.map((order: OrderType) => {
+        {data?.map((order: OrderType) => {
           const { event, tickets, orderId } = order;
           return (
             <div
