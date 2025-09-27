@@ -20,5 +20,15 @@
     height: 140px;
     gap: 5px;
     border-radius: 6px;
+    cursor: pointer;
+    h2 {
+      font-size: 20px;
+    }
+    &:hover {
+      border-color: #956d37;
+      box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+      transform: translateY(-3px);
+      transition: all 0.2s ease-in-out;
+    }
   }
 }

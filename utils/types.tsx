@@ -39,7 +39,7 @@ export interface OrderType {
   userId?: string;
   attendeeEmail: string;
   eventId: string;
-  ticketIds: string[];
+  tickets: string[];
   createdAt: Date;
   event?: EventType;
 }
