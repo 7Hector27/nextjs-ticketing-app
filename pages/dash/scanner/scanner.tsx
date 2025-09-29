@@ -50,10 +50,12 @@ const Scanner = () => {
   const handleScanAgain = () => {
     setScannedResult(null);
     if (html5QrCode) {
+      const width = window.innerWidth;
+      const qrBoxSize = width < 500 ? width * 0.9 : 500;
       html5QrCode
         .start(
           { facingMode: "environment" },
-          { fps: 15, qrbox: { width: 400, height: 400 } },
+          { fps: 15, qrbox: { width: qrBoxSize, height: qrBoxSize } },
           (decodedText) => {
             console.log("Scanned QR:", decodedText);
             setScannedResult(decodedText);
@@ -61,7 +63,9 @@ const Scanner = () => {
               .stop()
               .catch((err) => console.error("Stop failed:", err));
           },
-          (err) => {}
+          (err) => {
+            console.log(err);
+          }
         )
         .catch((err) => console.error("Restart failed:", err));
     }
