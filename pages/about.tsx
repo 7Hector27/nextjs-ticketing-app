@@ -1,12 +1,11 @@
 import React from "react";
 
-import Navbar from "../components/Navbar/Navbar";
+import SiteLayout from "@/components/layouts/siteLayout";
 
 import styles from "./styles.module.scss";
 const About = () => {
   return (
-    <div className={styles.about}>
-      <Navbar />
+    <SiteLayout className={styles.about}>
       <main className={styles.content}>
         <h1>About Qritix</h1>
         <p>
@@ -33,7 +32,7 @@ const About = () => {
           </ul>
         </section>
       </main>
-    </div>
+    </SiteLayout>
   );
 };
 

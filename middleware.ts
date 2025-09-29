@@ -16,7 +16,7 @@ export async function middleware(req: NextRequest) {
       return NextResponse.next();
     }
 
-    return NextResponse.redirect(new URL("/unauthorized", req.url));
+    return NextResponse.redirect(new URL("/", req.url));
   } catch (error) {
     console.error("JWT verification failed:", error);
     return NextResponse.redirect(new URL("/", req.url));

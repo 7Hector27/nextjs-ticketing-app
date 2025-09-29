@@ -46,6 +46,7 @@ const Navbar = () => {
     user: [
       { title: "About", href: "/about" },
       { title: "Events", href: "/events" },
+      { title: "My Orders", href: "/orders/history/" },
     ],
     guest: [
       { title: "About", href: "/about" },
@@ -58,7 +59,7 @@ const Navbar = () => {
       ? navBarTypes.admin
       : role === "staff"
       ? navBarTypes.staff
-      : role === "user"
+      : role === "customer"
       ? navBarTypes.user
       : navBarTypes.guest;
 

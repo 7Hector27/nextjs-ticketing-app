@@ -33,10 +33,11 @@ const OrderById = () => {
 
   const { eventId, tickets } = orderData;
   const { date, title, location } = eventId || {};
-  if (!eventId) return;
   const myDate = new Date(date);
   const datePart = format(myDate, "MMM dd, yyyy");
-  const timePart = format(myDate, "hh:mm a");
+  const timePart = format(myDate, "h:mm a");
+
+  if (!eventId) return;
 
   return (
     <SiteLayout>
@@ -59,7 +60,6 @@ const OrderById = () => {
           <h2>{title}</h2>
           <QRCodeCanvas
             value={tickets[currentTicket].qrCodeData}
-            size={220}
             className={styles.qrCode}
           />
           <div className={styles.eventInfo}>
