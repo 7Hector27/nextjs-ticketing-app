@@ -65,13 +65,17 @@ const Scanner = () => {
 
         {/* Results */}
         {scannedResult && (
-          <div className={styles.resultBox}>
-            <h2>Scan Result</h2>
-            <p>{scannedResult}</p>
-            <button className={styles.actionButton} onClick={handleScanAgain}>
-              Scan Another Ticket
-            </button>
-          </div>
+          <>
+            <div className={styles.resultBox}>
+              <h2>Scan Result</h2>
+              <p>{scannedResult}</p>
+            </div>
+            <div className={styles.actions}>
+              <button className={styles.actionButton} onClick={handleScanAgain}>
+                Scan Another Ticket
+              </button>
+            </div>
+          </>
         )}
       </div>
     </SiteLayout>
