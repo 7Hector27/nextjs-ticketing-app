@@ -65,3 +65,23 @@
     }
   }
 }
+.resultBox {
+  margin-top: 20px;
+  padding: 16px;
+  background: #faf8f6; // Surface
+  border: 2px solid #e9d6c5; // Border color
+  border-radius: 8px;
+  max-width: 500px;
+  text-align: center;
+
+  h2 {
+    margin-bottom: 8px;
+    color: #ddc09f; // Text on Dark
+  }
+
+  p {
+    font-size: 1.1rem;
+    color: #ddc09f; // Text on Dark
+    word-break: break-word;
+  }
+}
