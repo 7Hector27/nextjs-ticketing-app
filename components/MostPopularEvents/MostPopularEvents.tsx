@@ -42,7 +42,6 @@ const MostPopularEvents = () => {
       <h2>Weekly Top Sellers</h2>
       <div className={styles.eventsGrid}>
         {TopSellers.map((event) => {
-          // Combine date and time into a single Date object
           const eventDateTime = new Date(`${event.date}T${event.time}`);
           return (
             <div key={event.id}>

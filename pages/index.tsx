@@ -1,6 +1,5 @@
 import React from "react";
 
-import Navbar from "../components/Navbar/Navbar";
 import AuthForm from "@/components/AuthForm";
 import FeaturedDashEvent from "@/components/FeaturedDashEvent";
 

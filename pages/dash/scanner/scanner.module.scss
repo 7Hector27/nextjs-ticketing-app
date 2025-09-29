@@ -1,3 +1,67 @@
-.scanner {
-  background-color: #f1e1d3;
+.scannerPage {
+  background: #2d2a24; // Mocha
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: sans-serif;
+  color: #ddc09f; // Text on Dark
+
+  // subtle wavy background pattern
+  background-image: radial-gradient(
+      circle at 20% 20%,
+      rgba(180, 90, 12, 0.05),
+      transparent 25%
+    ),
+    radial-gradient(circle at 80% 80%, rgba(136, 68, 8, 0.05), transparent 25%);
+  background-size: 400px 400px;
+}
+
+.title {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #ddc09f; // Text on Dark
+  text-align: center;
+}
+
+.scannerBox {
+  width: 500px;
+  height: 500px;
+  overflow: hidden;
+  border-radius: 12px;
+
+  p {
+    color: #7a572d; // Dark Brass
+    font-size: 1rem;
+    z-index: 2;
+  }
+
+  // make the injected video fit nicely
+  video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover; //default
+    border-radius: 12px;
+  }
+
+  // style injected stop button
+  button {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #956d37;
+    color: #faf8f6;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(149, 109, 55, 0.5);
+
+    &:hover {
+      background: #7a572d; // darker brass
+    }
+  }
 }
