@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Html5QrcodeScanner } from "html5-qrcode";
+import { Html5Qrcode } from "html5-qrcode";
 import SiteLayout from "@/components/layouts/siteLayout";
 
 import styles from "./scanner.module.scss";
@@ -7,50 +7,64 @@ import styles from "./scanner.module.scss";
 const Scanner = () => {
   const qrCodeRegionId = "qr-reader";
   const [scannedResult, setScannedResult] = useState<string | null>(null);
-  const [scannerInstance, setScannerInstance] =
-    useState<Html5QrcodeScanner | null>(null);
+  const [html5QrCode, setHtml5QrCode] = useState<Html5Qrcode | null>(null);
 
   useEffect(() => {
     if (!scannedResult) {
       const width = window.innerWidth;
-      const qrBoxSize = width < 500 ? width * 1 : 500;
+      const qrBoxSize = width < 500 ? width * 0.9 : 500;
 
-      const scanner = new Html5QrcodeScanner(
-        qrCodeRegionId,
-        {
-          fps: 15,
-          qrbox: { width: qrBoxSize, height: qrBoxSize },
-        },
-        false
-      );
+      const scanner = new Html5Qrcode(qrCodeRegionId);
 
-      scanner.render(
-        (decodedText) => {
-          console.log("Scanned QR:", decodedText);
-          setScannedResult(decodedText);
+      scanner
+        .start(
+          { facingMode: "environment" }, // use back camera if available
+          {
+            fps: 15,
+            qrbox: { width: qrBoxSize, height: qrBoxSize },
+          },
+          (decodedText) => {
+            console.log("Scanned QR:", decodedText);
+            setScannedResult(decodedText);
 
-          // Stop scanning after a result
-          scanner
-            .clear()
-            .catch((err) => console.error("Failed to clear scanner:", err));
-        },
-        (errorMessage) => {
-          // ignore frequent scan errors
-        }
-      );
+            // Stop scanning after success
+            scanner.stop().catch((err) => console.error("Stop failed:", err));
+          },
+          (errorMessage) => {
+            // ignore decode errors
+          }
+        )
+        .catch((err) => console.error("Unable to start scanning:", err));
 
-      setScannerInstance(scanner);
+      setHtml5QrCode(scanner);
 
       return () => {
         scanner
-          .clear()
-          .catch((err) => console.error("Failed to clear scanner:", err));
+          .stop()
+          .then(() => scanner.clear())
+          .catch((err) => console.error("Failed to stop scanner:", err));
       };
     }
   }, [scannedResult]);
 
   const handleScanAgain = () => {
     setScannedResult(null);
+    if (html5QrCode) {
+      html5QrCode
+        .start(
+          { facingMode: "environment" },
+          { fps: 15, qrbox: { width: 400, height: 400 } },
+          (decodedText) => {
+            console.log("Scanned QR:", decodedText);
+            setScannedResult(decodedText);
+            html5QrCode
+              .stop()
+              .catch((err) => console.error("Stop failed:", err));
+          },
+          (err) => {}
+        )
+        .catch((err) => console.error("Restart failed:", err));
+    }
   };
 
   return (
