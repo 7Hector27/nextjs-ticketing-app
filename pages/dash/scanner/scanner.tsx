@@ -66,11 +66,7 @@ const Scanner = () => {
 
         {/* Scanner camera box */}
         {!scannedResult && (
-          <div
-            id={qrCodeRegionId}
-            className={styles.scannerBox}
-            style={{ width: "100%", maxWidth: 500, margin: "0 auto" }}
-          />
+          <div id={qrCodeRegionId} className={styles.scannerBox} />
         )}
 
         {/* Results */}

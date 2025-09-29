@@ -6,7 +6,7 @@
   align-items: center;
   justify-content: center;
   font-family: sans-serif;
-  color: #ddc09f; // Text on Dark
+  color: #ddc09f;
 
   // subtle wavy background pattern
   background-image: radial-gradient(
@@ -21,10 +21,17 @@
 .title {
   font-size: 2rem;
   margin-bottom: 2rem;
-  color: #ddc09f; // Text on Dark
+  color: #ddc09f;
   text-align: center;
 }
-
+.scannerBox {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 350px;
+  height: 100%;
+}
 /* Hide html5-qrcode's built-in button */
 #qr-reader__dashboard {
   display: none !important;
