@@ -25,63 +25,47 @@
   text-align: center;
 }
 
+/* Hide html5-qrcode's built-in button */
+#qr-reader__dashboard {
+  display: none !important;
+}
+
 .scannerBox {
   width: 400px;
-  height: 600px;
-  overflow: hidden;
+  height: 400px;
   border-radius: 12px;
+  overflow: hidden;
 
-  p {
-    color: #7a572d; // Dark Brass
-    font-size: 1rem;
-    z-index: 2;
-  }
-
-  // make the injected video fit nicely
   video {
     width: 100% !important;
     height: 100% !important;
-    object-fit: cover; //default
+    object-fit: cover;
     border-radius: 12px;
   }
-
-  // style injected stop button
-  button {
-    position: absolute;
-    bottom: 16px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #956d37;
-    color: #faf8f6;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 0 10px rgba(149, 109, 55, 0.5);
-
-    &:hover {
-      background: #7a572d; // darker brass
-    }
-  }
 }
+
 .resultBox {
   margin-top: 20px;
   padding: 16px;
   background: #faf8f6; // Surface
-  border: 2px solid #e9d6c5; // Border color
+  border: 2px solid #e9d6c5;
   border-radius: 8px;
   max-width: 500px;
   text-align: center;
+}
 
-  h2 {
-    margin-bottom: 8px;
-    color: #2d2a24; // Mocha (text primary)
-  }
+.actionButton {
+  margin-top: 12px;
+  background: #956d37; // Brass
+  color: #faf8f6;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(149, 109, 55, 0.5);
 
-  p {
-    font-size: 1.1rem;
-    color: #7a572d; // Dark Brass (secondary text)
-    word-break: break-word;
+  &:hover {
+    background: #7a572d; // Darker Brass
   }
 }
