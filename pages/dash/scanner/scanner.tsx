@@ -11,64 +11,52 @@ const Scanner = () => {
 
   useEffect(() => {
     if (!scannedResult) {
-      const width = window.innerWidth;
-      const qrBoxSize = width < 500 ? width * 0.9 : 500;
+      // Wait for the DOM to render the div
+      const initScanner = async () => {
+        const width = window.innerWidth;
+        const qrBoxSize = width < 500 ? width * 0.8 : 400;
 
-      const scanner = new Html5Qrcode(qrCodeRegionId);
+        const scanner = new Html5Qrcode(qrCodeRegionId);
 
-      scanner
-        .start(
-          { facingMode: "environment" }, // use back camera if available
-          {
-            fps: 15,
-            qrbox: { width: qrBoxSize, height: qrBoxSize },
-          },
-          (decodedText) => {
-            console.log("Scanned QR:", decodedText);
-            setScannedResult(decodedText);
+        try {
+          await scanner.start(
+            { facingMode: "environment" }, // back camera
+            {
+              fps: 10,
+              qrbox: { width: qrBoxSize, height: qrBoxSize },
+            },
+            (decodedText) => {
+              console.log("Scanned QR:", decodedText);
+              setScannedResult(decodedText);
 
-            // Stop scanning after success
-            scanner.stop().catch((err) => console.error("Stop failed:", err));
-          },
-          (errorMessage) => {
-            // ignore decode errors
-          }
-        )
-        .catch((err) => console.error("Unable to start scanning:", err));
+              // stop after success
+              scanner.stop().catch((err) => console.error("Stop failed:", err));
+            },
+            (errorMessage) => {
+              // ignore decode errors
+            }
+          );
+          setHtml5QrCode(scanner);
+        } catch (err) {
+          console.error("Unable to start scanner:", err);
+        }
+      };
 
-      setHtml5QrCode(scanner);
+      initScanner();
 
       return () => {
-        scanner
-          .stop()
-          .then(() => scanner.clear())
-          .catch((err) => console.error("Failed to stop scanner:", err));
+        if (html5QrCode) {
+          html5QrCode
+            .stop()
+            .then(() => html5QrCode.clear())
+            .catch((err) => console.error("Failed to stop scanner:", err));
+        }
       };
     }
   }, [scannedResult]);
 
-  const handleScanAgain = () => {
+  const handleScanAgain = async () => {
     setScannedResult(null);
-    if (html5QrCode) {
-      const width = window.innerWidth;
-      const qrBoxSize = width < 500 ? width * 0.9 : 500;
-      html5QrCode
-        .start(
-          { facingMode: "environment" },
-          { fps: 15, qrbox: { width: qrBoxSize, height: qrBoxSize } },
-          (decodedText) => {
-            console.log("Scanned QR:", decodedText);
-            setScannedResult(decodedText);
-            html5QrCode
-              .stop()
-              .catch((err) => console.error("Stop failed:", err));
-          },
-          (err) => {
-            console.log(err);
-          }
-        )
-        .catch((err) => console.error("Restart failed:", err));
-    }
   };
 
   return (
@@ -78,7 +66,11 @@ const Scanner = () => {
 
         {/* Scanner camera box */}
         {!scannedResult && (
-          <div id={qrCodeRegionId} className={styles.scannerBox} />
+          <div
+            id={qrCodeRegionId}
+            className={styles.scannerBox}
+            style={{ width: "100%", maxWidth: 500, margin: "0 auto" }}
+          />
         )}
 
         {/* Results */}
