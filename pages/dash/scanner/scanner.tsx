@@ -14,7 +14,7 @@ const Scanner = () => {
       // Wait for the DOM to render the div
       const initScanner = async () => {
         const width = window.innerWidth;
-        const qrBoxSize = width < 500 ? width * 0.8 : 400;
+        const qrBoxSize = width < 500 ? width * 0.9 : 400;
 
         const scanner = new Html5Qrcode(qrCodeRegionId);
 
@@ -66,7 +66,11 @@ const Scanner = () => {
 
         {/* Scanner camera box */}
         {!scannedResult && (
-          <div id={qrCodeRegionId} className={styles.scannerBox} />
+          <div
+            id={qrCodeRegionId}
+            className={styles.scannerBox}
+            style={{ width: "100%", maxWidth: 500, margin: "0 auto" }}
+          />
         )}
 
         {/* Results */}

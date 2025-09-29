@@ -6,7 +6,7 @@
   align-items: center;
   justify-content: center;
   font-family: sans-serif;
-  color: #ddc09f;
+  color: #ddc09f; // Text on Dark
 
   // subtle wavy background pattern
   background-image: radial-gradient(
@@ -21,80 +21,51 @@
 .title {
   font-size: 2rem;
   margin-bottom: 2rem;
-  color: #ddc09f;
+  color: #ddc09f; // Text on Dark
   text-align: center;
 }
-.scannerBox {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 350px;
-  height: 100%;
-}
+
 /* Hide html5-qrcode's built-in button */
 #qr-reader__dashboard {
   display: none !important;
 }
 
-.resultBox {
-  margin-top: 24px;
-  padding: 20px;
-  background: #faf8f6;
-  border: 1px solid #e9d6c5;
+.scannerBox {
+  width: 400px;
+  height: 100%;
   border-radius: 12px;
+  overflow: hidden;
+
+  video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover;
+    border-radius: 12px;
+  }
+}
+
+.resultBox {
+  margin-top: 20px;
+  padding: 16px;
+  background: #faf8f6; // Surface
+  border: 2px solid #e9d6c5;
+  border-radius: 8px;
   max-width: 500px;
   text-align: center;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  animation: fadeIn 0.3s ease;
-
-  h2 {
-    margin-bottom: 8px;
-    color: #2d2a24;
-    font-size: 1.25rem;
-  }
-
-  p {
-    font-size: 1.1rem;
-    color: #7a572d;
-    word-break: break-word;
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.actions {
-  margin-top: 16px;
-  display: flex;
-  justify-content: center;
-  gap: 12px;
 }
 
 .actionButton {
-  background: #956d37;
+  margin-top: 12px;
+  background: #956d37; // Brass
   color: #faf8f6;
   border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: bold;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.1s ease;
-  box-shadow: 0 4px 12px rgba(149, 109, 55, 0.4);
+  box-shadow: 0 0 8px rgba(149, 109, 55, 0.5);
 
   &:hover {
-    background: #7a572d;
-    transform: translateY(-2px);
-  }
-
-  &:active {
-    transform: translateY(0);
+    background: #7a572d; // Darker Brass
   }
 }
