@@ -13,7 +13,7 @@ const Scanner = () => {
   useEffect(() => {
     if (!scannedResult) {
       const width = window.innerWidth;
-      const qrBoxSize = width < 500 ? width * 0.8 : 400;
+      const qrBoxSize = width < 500 ? width * 0.8 : 500;
 
       const scanner = new Html5QrcodeScanner(
         qrCodeRegionId,
