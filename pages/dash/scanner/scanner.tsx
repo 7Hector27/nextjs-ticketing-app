@@ -12,6 +12,7 @@ const Scanner = () => {
   const [html5QrCode, setHtml5QrCode] = useState<Html5Qrcode | null>(null);
   const ticketApi = new TicketAPI();
 
+  // 🔹 Extracted scanner start logic
   const startScanner = async (scanner: Html5Qrcode) => {
     const width = window.innerWidth;
     const qrBoxSize = width < 500 ? width * 0.9 : 400;
@@ -23,35 +24,30 @@ const Scanner = () => {
         qrbox: { width: qrBoxSize, height: qrBoxSize },
       },
       async (decodedText) => {
-        try {
-          // ✅ stop after first decode
-          await scanner.stop();
+        await scanner.stop(); // stop after first scan
 
-          const data = await ticketApi.validateTicket(decodedText);
-          if (data.error) {
-            setScannedResult(`Error: ${data.message}`);
-          } else if (data.valid) {
-            setScannedResult(`✅ Valid Ticket: ${data.message}`);
-          } else {
-            setScannedResult(`❌ Invalid Ticket: ${data.message}`);
-          }
-        } catch (err) {
-          console.error("Validation error:", err);
+        const data = await ticketApi.validateTicket(decodedText);
+        if (data.error) {
+          setScannedResult(`Error: ${data.message}`);
+        } else if (data.valid) {
+          setScannedResult(`✅ Valid Ticket: ${data.message}`);
+        } else {
+          setScannedResult(`❌ Invalid Ticket: ${data.message}`);
         }
       },
       (errorMessage) => {
-        // optional: log decode errors
+        console.error(errorMessage);
       }
     );
   };
 
+  // 🔹 Setup scanner on mount
   useEffect(() => {
     const scanner = new Html5Qrcode(qrCodeRegionId);
     setHtml5QrCode(scanner);
 
-    if (!scannedResult) {
-      startScanner(scanner);
-    }
+    // start immediately
+    startScanner(scanner);
 
     return () => {
       scanner
@@ -59,14 +55,13 @@ const Scanner = () => {
         .then(() => scanner.clear())
         .catch(() => {});
     };
-    // only run on mount/unmount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // 🔹 Restart scanner on button click
   const handleScanAgain = async () => {
     if (html5QrCode) {
       setScannedResult(null);
-      await startScanner(html5QrCode); // ✅ restart scanner
+      await startScanner(html5QrCode);
     }
   };
 
@@ -83,6 +78,7 @@ const Scanner = () => {
             style={{ width: "100%", maxWidth: 500, margin: "0 auto" }}
           />
         )}
+
         {scannedResult && (
           <>
             <div className={styles.resultBox}>
