@@ -22,37 +22,29 @@ const Scanner = () => {
         const scanner = new Html5Qrcode(qrCodeRegionId);
 
         await scanner.start(
-          { facingMode: "environment" },
+          { facingMode: "environment" }, // back camera
           {
             fps: 10,
             qrbox: { width: qrBoxSize, height: qrBoxSize },
           },
-          async (decodedText) => {
-            try {
-              // ✅ Stop the scanner immediately to prevent multiple fires
-              await scanner.stop();
-
-              // Call backend validation
-              const data = await ticketApi.validateTicket(decodedText);
-
+          (decodedText) => {
+            const res = ticketApi.validateTicket(decodedText);
+            res.then((data) => {
               if (data.error) {
                 setScannedResult(`Error: ${data.message}`);
               } else if (data.valid) {
-                setScannedResult(`✅ Valid Ticket: ${data.message}`);
+                setScannedResult(`Valid Ticket: ${data.message}`);
               } else {
-                setScannedResult(`❌ Invalid Ticket: ${data.message}`);
+                setScannedResult(`Invalid Ticket : ${data.message}`);
               }
-            } catch (err) {
-              console.error("Validation failed:", err);
-              setScannedResult("Error validating ticket");
-            }
+            });
+            // stop after success
+            //scanner.stop().catch((err) => console.error("Stop failed:", err));
           },
           (errorMessage) => {
-            // This just means nothing found in this frame, not an actual error
-            console.debug("QR scan attempt:", errorMessage);
+            console.error(errorMessage);
           }
         );
-
         setHtml5QrCode(scanner);
       };
 
@@ -71,31 +63,6 @@ const Scanner = () => {
 
   const handleScanAgain = async () => {
     setScannedResult(null);
-    if (html5QrCode) {
-      // restart the scanner
-      const width = window.innerWidth;
-      const qrBoxSize = width < 500 ? width * 0.9 : 400;
-      await html5QrCode.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: { width: qrBoxSize, height: qrBoxSize } },
-        async (decodedText) => {
-          await html5QrCode.stop();
-          const data = await ticketApi.validateTicket(decodedText);
-
-          if (data.error) {
-            setScannedResult(`Error: ${data.message}`);
-          } else if (data.valid) {
-            setScannedResult(`✅ Valid Ticket: ${data.message}`);
-          } else {
-            setScannedResult(`❌ Invalid Ticket: ${data.message}`);
-          }
-        },
-        (errorMessage) => {
-          // Not fatal: this just means no QR was detected in that frame
-          console.debug("Scan frame failed:", errorMessage);
-        }
-      );
-    }
   };
 
   return (
