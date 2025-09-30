@@ -41,8 +41,10 @@ const Scanner = () => {
           });
       },
       (errorMessage) => {
-        console.error(errorMessage);
-        alert(`${errorMessage}`);
+        if (!errorMessage.includes("No MultiFormat Readers")) {
+          console.error("Scanner error:", errorMessage);
+          alert(`Scanner error: ${errorMessage}`);
+        }
       }
     );
     setHtml5QrCode(scanner);
