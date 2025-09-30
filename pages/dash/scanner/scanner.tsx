@@ -70,7 +70,6 @@ const Scanner = () => {
 
   const handleScanAgain = async () => {
     setScannedResult(null);
-    initScanner();
   };
 
   return (
