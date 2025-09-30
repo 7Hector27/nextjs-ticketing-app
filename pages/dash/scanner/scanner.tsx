@@ -28,7 +28,16 @@ const Scanner = () => {
             qrbox: { width: qrBoxSize, height: qrBoxSize },
           },
           (decodedText) => {
-            return decodedText;
+            const res = ticketApi.validateTicket(decodedText);
+            res.then((data) => {
+              if (data.error) {
+                setScannedResult(`Error: ${data.message}`);
+              } else if (data.valid) {
+                setScannedResult(`Valid Ticket: ${data.message}`);
+              } else {
+                setScannedResult(`Invalid Ticket : ${data.message}`);
+              }
+            });
             // stop after success
             //scanner.stop().catch((err) => console.error("Stop failed:", err));
           },
@@ -36,17 +45,6 @@ const Scanner = () => {
             console.error(errorMessage);
           }
         );
-        if (!res) return;
-        await ticketApi.validateTicket(res).then((data) => {
-          if (data.error) {
-            setScannedResult(`Error: ${data.message}`);
-          } else if (data.valid) {
-            setScannedResult(`Valid Ticket: ${data.message}`);
-          } else {
-            setScannedResult(`Invalid Ticket : ${data.message}`);
-          }
-        });
-
         setHtml5QrCode(scanner);
       };
 
