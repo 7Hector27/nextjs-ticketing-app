@@ -38,8 +38,6 @@ const Scanner = () => {
                 setScannedResult(`Invalid Ticket : ${data.message}`);
               }
             });
-            // stop after success
-            //scanner.stop().catch((err) => console.error("Stop failed:", err));
           },
           (errorMessage) => {
             console.error(errorMessage);

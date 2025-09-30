@@ -1,3 +1,14 @@
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .scannerPage {
   background: #2d2a24;
   min-height: 100vh;
@@ -38,27 +49,29 @@
   text-align: center;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   animation: fadeIn 0.3s ease;
-
   h2 {
     margin-bottom: 8px;
     color: #2d2a24;
     font-size: 1.25rem;
   }
-
   p {
     font-size: 1.1rem;
     color: #7a572d;
     word-break: break-word;
   }
 }
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+.actions {
+  .actionButton {
+    width: 130px;
+    height: 30px;
+    border: none;
+    border-radius: 6px;
+    background-color: #956d37;
+    color: white;
+    margin-top: 10px;
+    cursor: pointer;
+    &:hover {
+      background-color: #7a572d;
+    }
   }
 }

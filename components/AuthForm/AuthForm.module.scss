@@ -40,26 +40,28 @@
         color: #2d2a24;
       }
       .button {
-        background-color: #114599;
-        color: white;
-        border: none;
-        border-radius: 4px;
+        width: 100%;
         height: 30px;
+        border: none;
+        border-radius: 6px;
+        background-color: #956d37;
+        color: white;
         cursor: pointer;
         &:hover {
-          background-color: #1553b6;
+          background-color: #7a572d;
         }
       }
       .formSwitchBtn {
         background: none;
         border: none;
-        color: #114599;
+        color: #956d37;
         cursor: pointer;
         font-size: 16px;
-        text-decoration: underline;
+
         padding: 0;
         &:hover {
-          color: #2171f1;
+          color: #7a572d;
+          text-decoration: underline;
         }
       }
     }
