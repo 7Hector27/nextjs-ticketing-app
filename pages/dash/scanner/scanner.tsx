@@ -63,6 +63,7 @@ const Scanner = () => {
   }, [scannedResult]);
 
   const handleScanAgain = () => {
+    scannerRef?.current?.clear();
     scanningRef.current = true; // allow scanning again
     setScannedResult(null);
     initScanner();
