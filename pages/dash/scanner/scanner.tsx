@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 
 import SiteLayout from "@/components/layouts/siteLayout";
@@ -9,77 +9,65 @@ import styles from "./scanner.module.scss";
 const Scanner = () => {
   const qrCodeRegionId = "qr-reader";
   const [scannedResult, setScannedResult] = useState<string | null>(null);
-  const [logs, setLogs] = useState<string[]>([]); // <-- collect logs here
-  const scannerRef = useRef<Html5Qrcode | null>(null);
+  const [html5QrCode, setHtml5QrCode] = useState<Html5Qrcode | null>(null);
   const ticketApi = new TicketAPI();
-
-  // helper to push logs to UI
-  const log = (msg: unknown) => {
-    const text = typeof msg === "string" ? msg : JSON.stringify(msg, null, 2);
-
-    console.log(text); // still output to console
-    setLogs((prev) => [...prev, text]);
-  };
-
-  const startScanner = async () => {
-    const width = window.innerWidth;
-    const qrBoxSize = width < 500 ? width * 0.9 : 400;
-
-    if (!scannerRef.current) {
-      scannerRef.current = new Html5Qrcode(qrCodeRegionId);
-    }
-
-    log("Starting scanner…");
-
-    await scannerRef.current.start(
-      { facingMode: "environment" },
-      { fps: 10, qrbox: { width: qrBoxSize, height: qrBoxSize } },
-      async (decodedText) => {
-        try {
-          log(`Decoded: ${decodedText}`);
-          await scannerRef.current?.stop();
-          log("Scanner stopped after decode");
-
-          const data = await ticketApi.validateTicket(decodedText);
-          log("Validation response: " + JSON.stringify(data));
-
-          if (data.error) {
-            setScannedResult(`Error: ${data.message}`);
-          } else if (data.valid) {
-            setScannedResult(`✅ Valid Ticket: ${data.message}`);
-          } else {
-            setScannedResult(`❌ Invalid Ticket: ${data.message}`);
-          }
-        } catch (err) {
-          log("Validation failed: " + err);
-        }
-      },
-      (errorMessage) => {
-        // harmless frame decode errors
-        log("Frame skipped: " + errorMessage);
-      }
-    );
-  };
 
   useEffect(() => {
     if (!scannedResult) {
-      startScanner();
+      // Wait for the DOM to render the div
+      const initScanner = async () => {
+        const width = window.innerWidth;
+        const qrBoxSize = width < 500 ? width * 0.9 : 400;
+
+        const scanner = new Html5Qrcode(qrCodeRegionId);
+
+        try {
+          await scanner.start(
+            { facingMode: "environment" }, // back camera
+            {
+              fps: 10,
+              qrbox: { width: qrBoxSize, height: qrBoxSize },
+            },
+            (decodedText) => {
+              console.log("Scanned QR:", decodedText);
+              const res = ticketApi.validateTicket(decodedText);
+              res.then((data) => {
+                if (data.error) {
+                  setScannedResult(`Error: ${data.error}`);
+                } else if (data.valid) {
+                  setScannedResult(`Valid Ticket: ${data.ticketInfo}`);
+                } else {
+                  setScannedResult("Invalid Ticket");
+                }
+              });
+              // stop after success
+              scanner.stop().catch((err) => console.error("Stop failed:", err));
+            },
+            (errorMessage) => {
+              console.error(errorMessage);
+            }
+          );
+          setHtml5QrCode(scanner);
+        } catch (err) {
+          console.error("Unable to start scanner:", err);
+        }
+      };
+
+      initScanner();
 
       return () => {
-        scannerRef.current
-          ?.stop()
-          .then(() => {
-            log("Scanner stopped in cleanup");
-            return scannerRef.current?.clear();
-          })
-          .catch((err) => log("Failed to stop scanner: " + err));
+        if (html5QrCode) {
+          html5QrCode
+            .stop()
+            .then(() => html5QrCode.clear())
+            .catch((err) => console.error("Failed to stop scanner:", err));
+        }
       };
     }
   }, [scannedResult]);
 
-  const handleScanAgain = () => {
+  const handleScanAgain = async () => {
     setScannedResult(null);
-    setLogs([]); // reset logs if you want
   };
 
   return (
@@ -87,6 +75,7 @@ const Scanner = () => {
       <div className={styles.scannerPage}>
         <h1 className={styles.title}>Staff Ticket Scanner</h1>
 
+        {/* Scanner camera box */}
         {!scannedResult && (
           <div
             id={qrCodeRegionId}
@@ -95,6 +84,7 @@ const Scanner = () => {
           />
         )}
 
+        {/* Results */}
         {scannedResult && (
           <>
             <div className={styles.resultBox}>
@@ -108,21 +98,6 @@ const Scanner = () => {
             </div>
           </>
         )}
-
-        {/* Debug log output */}
-        <pre
-          style={{
-            marginTop: "1rem",
-            background: "#111",
-            color: "#0f0",
-            padding: "1rem",
-            maxHeight: "200px",
-            overflowY: "auto",
-            fontSize: "0.8rem",
-          }}
-        >
-          {logs.join("\n")}
-        </pre>
       </div>
     </SiteLayout>
   );
