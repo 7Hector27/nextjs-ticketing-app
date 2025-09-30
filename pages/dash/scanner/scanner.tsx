@@ -35,9 +35,7 @@ const Scanner = () => {
                 if (data.error) {
                   setScannedResult(`Error: ${data.error}`);
                 } else if (data.valid) {
-                  setScannedResult(
-                    `Valid Ticket: ${data.ticketInfo} ... ${data.message}`
-                  );
+                  setScannedResult(`Valid Ticket: ${data.message}`);
                 } else {
                   setScannedResult("Invalid Ticket");
                 }
