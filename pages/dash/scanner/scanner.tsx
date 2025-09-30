@@ -21,30 +21,36 @@ const Scanner = () => {
 
         const scanner = new Html5Qrcode(qrCodeRegionId);
 
-        const res = await scanner.start(
+        await scanner.start(
           { facingMode: "environment" }, // back camera
           {
             fps: 10,
             qrbox: { width: qrBoxSize, height: qrBoxSize },
           },
-          (decodedText) => {
-            const res = ticketApi.validateTicket(decodedText);
-            res.then((data) => {
+          async (decodedText) => {
+            try {
+              // ✅ stop immediately to prevent multiple scans
+              await scanner.stop();
+
+              const data = await ticketApi.validateTicket(decodedText);
+
               if (data.error) {
                 setScannedResult(`Error: ${data.message}`);
               } else if (data.valid) {
-                setScannedResult(`Valid Ticket: ${data.message}`);
+                setScannedResult(`✅ Valid Ticket: ${data.message}`);
               } else {
-                setScannedResult(`Invalid Ticket : ${data.message}`);
+                setScannedResult(`❌ Invalid Ticket: ${data.message}`);
               }
-            });
-            // stop after success
-            //scanner.stop().catch((err) => console.error("Stop failed:", err));
+            } catch (err) {
+              console.error("Validation failed:", err);
+            }
           },
           (errorMessage) => {
-            console.error(errorMessage);
+            // harmless frame decode errors
+            console.debug("No QR found in this frame:", errorMessage);
           }
         );
+
         setHtml5QrCode(scanner);
       };
 
