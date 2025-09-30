@@ -11,23 +11,26 @@ const Scanner = () => {
   const [scannedResult, setScannedResult] = useState<string | null>(null);
   const [html5QrCode, setHtml5QrCode] = useState<Html5Qrcode | null>(null);
   const ticketApi = new TicketAPI();
+  const initScanner = async () => {
+    const width = window.innerWidth;
+    const qrBoxSize = width < 500 ? width * 0.9 : 400;
 
-  const startScanner = async (scanner: Html5Qrcode) => {
-    try {
-      const width = window.innerWidth;
-      const qrBoxSize = width < 500 ? width * 0.9 : 400;
+    const scanner = new Html5Qrcode(qrCodeRegionId);
 
-      await scanner.start(
-        { facingMode: "environment" },
-        {
-          fps: 10,
-          qrbox: { width: qrBoxSize, height: qrBoxSize },
-        },
-        async (decodedText) => {
-          try {
-            await scanner.stop(); // stop right after first result
-            const data = await ticketApi.validateTicket(decodedText);
-
+    await scanner.start(
+      { facingMode: "environment" },
+      {
+        fps: 10,
+        qrbox: { width: qrBoxSize, height: qrBoxSize },
+      },
+      (decodedText) => {
+        // ✅ Stop scanning immediately to avoid duplicates
+        scanner
+          .stop()
+          .then(() => {
+            return ticketApi.validateTicket(decodedText);
+          })
+          .then((data) => {
             if (data.error) {
               setScannedResult(`Error: ${data.message}`);
             } else if (data.valid) {
@@ -35,40 +38,33 @@ const Scanner = () => {
             } else {
               setScannedResult(`❌ Invalid Ticket: ${data.message}`);
             }
-          } catch (err) {
-            console.error("Error while stopping scanner:", err);
-          }
-        },
-        (errorMessage) => {
-          // These are frequent decode errors — safe to ignore
-          console.debug("Scan error:", errorMessage);
-        }
-      );
-    } catch (err) {
-      console.error("Failed to start scanner:", err);
-    }
+          });
+      },
+      (errorMessage) => {
+        console.error(errorMessage);
+      }
+    );
+    setHtml5QrCode(scanner);
   };
 
   useEffect(() => {
-    const scanner = new Html5Qrcode(qrCodeRegionId);
-    setHtml5QrCode(scanner);
+    if (!scannedResult) {
+      initScanner();
 
-    startScanner(scanner);
-
-    return () => {
-      scanner
-        .stop()
-        .then(() => scanner.clear())
-        .catch(() => {}); // ignore stop errors on unmount
-    };
-  }, []);
+      return () => {
+        if (html5QrCode) {
+          html5QrCode
+            .stop()
+            .then(() => html5QrCode.clear())
+            .catch((err) => console.error("Failed to stop scanner:", err));
+        }
+      };
+    }
+  }, [scannedResult]);
 
   const handleScanAgain = async () => {
-    if (!html5QrCode) return;
-
     setScannedResult(null);
-    // restart scanner
-    await startScanner(html5QrCode);
+    initScanner();
   };
 
   return (
@@ -76,6 +72,7 @@ const Scanner = () => {
       <div className={styles.scannerPage}>
         <h1 className={styles.title}>Staff Ticket Scanner</h1>
 
+        {/* Scanner camera box */}
         {!scannedResult && (
           <div
             id={qrCodeRegionId}
@@ -83,7 +80,6 @@ const Scanner = () => {
             style={{ width: "100%", maxWidth: 500, margin: "0 auto" }}
           />
         )}
-
         {scannedResult && (
           <>
             <div className={styles.resultBox}>
