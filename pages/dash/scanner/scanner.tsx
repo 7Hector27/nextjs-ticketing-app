@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 
 import SiteLayout from "@/components/layouts/siteLayout";
@@ -9,64 +9,64 @@ import styles from "./scanner.module.scss";
 const Scanner = () => {
   const qrCodeRegionId = "qr-reader";
   const [scannedResult, setScannedResult] = useState<string | null>(null);
-  const [html5QrCode, setHtml5QrCode] = useState<Html5Qrcode | null>(null);
+  const scannerRef = useRef<Html5Qrcode | null>(null);
+  const scanningRef = useRef(true); // 👈 flag to simulate pause/resume
   const ticketApi = new TicketAPI();
 
   useEffect(() => {
-    if (!scannedResult) {
-      // Wait for the DOM to render the div
-      const initScanner = async () => {
-        const width = window.innerWidth;
-        const qrBoxSize = width < 500 ? width * 0.9 : 400;
+    const initScanner = async () => {
+      const width = window.innerWidth;
+      const qrBoxSize = width < 500 ? width * 0.9 : 400;
 
-        const scanner = new Html5Qrcode(qrCodeRegionId);
+      if (!scannerRef.current) {
+        scannerRef.current = new Html5Qrcode(qrCodeRegionId);
+      }
 
-        try {
-          await scanner.start(
-            { facingMode: "environment" }, // back camera
-            {
-              fps: 10,
-              qrbox: { width: qrBoxSize, height: qrBoxSize },
-            },
-            (decodedText) => {
-              console.log("Scanned QR:", decodedText);
-              const res = ticketApi.validateTicket(decodedText);
-              res.then((data) => {
-                if (data.error) {
-                  setScannedResult(`Error: ${data.error}...${data.message}`);
-                } else if (data.valid) {
-                  setScannedResult(`Valid Ticket: ${data.message}`);
-                } else {
-                  setScannedResult(`Invalid Ticket : ${data.message}`);
-                }
-              });
-              // stop after success
-              // scanner.stop().catch((err) => console.error("Stop failed:", err));
-            },
-            (errorMessage) => {
-              console.error(errorMessage);
+      try {
+        await scannerRef.current.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: qrBoxSize, height: qrBoxSize } },
+          async (decodedText) => {
+            if (!scanningRef.current) return; // 👈 ignore if "paused"
+
+            scanningRef.current = false; // "pause"
+
+            const data = await ticketApi.validateTicket(decodedText);
+
+            if (data.error) {
+              setScannedResult(`Error: ${data.error}...${data.message}`);
+            } else if (data.valid) {
+              setScannedResult(`✅ Valid Ticket: ${data.message}`);
+            } else {
+              setScannedResult(`❌ Invalid Ticket: ${data.message}`);
             }
-          );
-          setHtml5QrCode(scanner);
-        } catch (err) {
-          console.error("Unable to start scanner:", err);
-        }
-      };
+          },
+          (errorMessage) => {
+            // harmless frame decode errors
+            console.debug("Frame skipped:", errorMessage);
+          }
+        );
+      } catch (err) {
+        console.error("Unable to start scanner:", err);
+      }
+    };
 
+    if (!scannedResult) {
+      scanningRef.current = true; // allow scanning again
       initScanner();
-
-      return () => {
-        if (html5QrCode) {
-          html5QrCode
-            .stop()
-            .then(() => html5QrCode.clear())
-            .catch((err) => console.error("Failed to stop scanner:", err));
-        }
-      };
     }
+
+    return () => {
+      scannerRef.current
+        ?.stop()
+        .then(() => scannerRef.current?.clear())
+        .catch((err) => console.error("Failed to stop scanner:", err));
+    };
   }, [scannedResult]);
 
-  const handleScanAgain = async () => {
+  const handleScanAgain = () => {
+    scanningRef.current = true; // allow scanning again
+
     setScannedResult(null);
   };
 
@@ -75,7 +75,6 @@ const Scanner = () => {
       <div className={styles.scannerPage}>
         <h1 className={styles.title}>Staff Ticket Scanner</h1>
 
-        {/* Scanner camera box */}
         {!scannedResult && (
           <div
             id={qrCodeRegionId}
@@ -84,7 +83,6 @@ const Scanner = () => {
           />
         )}
 
-        {/* Results */}
         {scannedResult && (
           <>
             <div className={styles.resultBox}>
