@@ -9,8 +9,17 @@ import styles from "./scanner.module.scss";
 const Scanner = () => {
   const qrCodeRegionId = "qr-reader";
   const [scannedResult, setScannedResult] = useState<string | null>(null);
+  const [logs, setLogs] = useState<string[]>([]); // <-- collect logs here
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const ticketApi = new TicketAPI();
+
+  // helper to push logs to UI
+  const log = (msg: unknown) => {
+    const text = typeof msg === "string" ? msg : JSON.stringify(msg, null, 2);
+
+    console.log(text); // still output to console
+    setLogs((prev) => [...prev, text]);
+  };
 
   const startScanner = async () => {
     const width = window.innerWidth;
@@ -20,14 +29,19 @@ const Scanner = () => {
       scannerRef.current = new Html5Qrcode(qrCodeRegionId);
     }
 
+    log("Starting scanner…");
+
     await scannerRef.current.start(
       { facingMode: "environment" },
       { fps: 10, qrbox: { width: qrBoxSize, height: qrBoxSize } },
       async (decodedText) => {
         try {
-          await scannerRef.current?.stop(); // stop after one scan
+          log(`Decoded: ${decodedText}`);
+          await scannerRef.current?.stop();
+          log("Scanner stopped after decode");
 
           const data = await ticketApi.validateTicket(decodedText);
+          log("Validation response: " + JSON.stringify(data));
 
           if (data.error) {
             setScannedResult(`Error: ${data.message}`);
@@ -37,10 +51,13 @@ const Scanner = () => {
             setScannedResult(`❌ Invalid Ticket: ${data.message}`);
           }
         } catch (err) {
-          console.error("Validation failed:", err);
+          log("Validation failed: " + err);
         }
       },
-      () => {} // ignore frame decode errors
+      (errorMessage) => {
+        // harmless frame decode errors
+        log("Frame skipped: " + errorMessage);
+      }
     );
   };
 
@@ -51,14 +68,18 @@ const Scanner = () => {
       return () => {
         scannerRef.current
           ?.stop()
-          .then(() => scannerRef.current?.clear())
-          .catch((err) => console.error("Failed to stop scanner:", err));
+          .then(() => {
+            log("Scanner stopped in cleanup");
+            return scannerRef.current?.clear();
+          })
+          .catch((err) => log("Failed to stop scanner: " + err));
       };
     }
   }, [scannedResult]);
 
   const handleScanAgain = () => {
-    setScannedResult(null); // triggers useEffect → restart scanner
+    setScannedResult(null);
+    setLogs([]); // reset logs if you want
   };
 
   return (
@@ -66,7 +87,6 @@ const Scanner = () => {
       <div className={styles.scannerPage}>
         <h1 className={styles.title}>Staff Ticket Scanner</h1>
 
-        {/* Scanner camera box */}
         {!scannedResult && (
           <div
             id={qrCodeRegionId}
@@ -75,7 +95,6 @@ const Scanner = () => {
           />
         )}
 
-        {/* Results */}
         {scannedResult && (
           <>
             <div className={styles.resultBox}>
@@ -89,6 +108,21 @@ const Scanner = () => {
             </div>
           </>
         )}
+
+        {/* Debug log output */}
+        <pre
+          style={{
+            marginTop: "1rem",
+            background: "#111",
+            color: "#0f0",
+            padding: "1rem",
+            maxHeight: "200px",
+            overflowY: "auto",
+            fontSize: "0.8rem",
+          }}
+        >
+          {logs.join("\n")}
+        </pre>
       </div>
     </SiteLayout>
   );
