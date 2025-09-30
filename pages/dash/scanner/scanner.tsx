@@ -32,7 +32,6 @@ const Scanner = () => {
           },
           (errorMessage) => {
             console.error(errorMessage);
-            return;
           }
         );
 
