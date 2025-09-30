@@ -27,22 +27,29 @@ const Scanner = () => {
             fps: 10,
             qrbox: { width: qrBoxSize, height: qrBoxSize },
           },
-          (decodedText) => {
-            const res = ticketApi.validateTicket(decodedText);
-            res.then((data) => {
+          async (decodedText) => {
+            try {
+              // validate ticket
+              const data = await ticketApi.validateTicket(decodedText);
+
               if (data.error) {
                 setScannedResult(`Error: ${data.message}`);
               } else if (data.valid) {
-                setScannedResult(`Valid Ticket: ${data.message}`);
+                setScannedResult(`✅ Valid Ticket: ${data.message}`);
               } else {
-                setScannedResult(`Invalid Ticket : ${data.message}`);
+                setScannedResult(`❌ Invalid Ticket: ${data.message}`);
               }
-            });
-            // stop after success
-            //scanner.stop().catch((err) => console.error("Stop failed:", err));
+
+              // stop scanner after successful decode
+              await scanner.stop();
+            } catch (err) {
+              console.error("Validation failed:", err);
+              setScannedResult("Error validating ticket");
+            }
           },
           (errorMessage) => {
-            console.error(errorMessage);
+            // not fatal, just means nothing detected in that frame
+            console.debug("QR scan attempt:", errorMessage);
           }
         );
         setHtml5QrCode(scanner);
