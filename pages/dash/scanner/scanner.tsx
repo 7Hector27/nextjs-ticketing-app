@@ -42,6 +42,7 @@ const Scanner = () => {
       },
       (errorMessage) => {
         console.error(errorMessage);
+        alert(`${errorMessage}`);
       }
     );
     setHtml5QrCode(scanner);
