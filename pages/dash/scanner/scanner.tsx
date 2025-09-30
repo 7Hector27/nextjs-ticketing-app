@@ -41,7 +41,7 @@ const Scanner = () => {
                 }
               });
               // stop after success
-              scanner.stop().catch((err) => console.error("Stop failed:", err));
+              // scanner.stop().catch((err) => console.error("Stop failed:", err));
             },
             (errorMessage) => {
               console.error(errorMessage);
