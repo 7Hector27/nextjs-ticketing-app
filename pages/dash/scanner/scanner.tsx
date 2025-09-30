@@ -21,36 +21,32 @@ const Scanner = () => {
 
         const scanner = new Html5Qrcode(qrCodeRegionId);
 
-        try {
-          await scanner.start(
-            { facingMode: "environment" }, // back camera
-            {
-              fps: 10,
-              qrbox: { width: qrBoxSize, height: qrBoxSize },
-            },
-            (decodedText) => {
-              console.log("Scanned QR:", decodedText);
-              const res = ticketApi.validateTicket(decodedText);
-              res.then((data) => {
-                if (data.error) {
-                  setScannedResult(`Error: ${data.error}`);
-                } else if (data.valid) {
-                  setScannedResult(`Valid Ticket: ${data.message}`);
-                } else {
-                  setScannedResult("Invalid Ticket");
-                }
-              });
-              // stop after success
-              scanner.stop().catch((err) => console.error("Stop failed:", err));
-            },
-            (errorMessage) => {
-              console.error(errorMessage);
-            }
-          );
-          setHtml5QrCode(scanner);
-        } catch (err) {
-          console.error("Unable to start scanner:", err);
-        }
+        await scanner.start(
+          { facingMode: "environment" }, // back camera
+          {
+            fps: 10,
+            qrbox: { width: qrBoxSize, height: qrBoxSize },
+          },
+          (decodedText) => {
+            console.log("Scanned QR:", decodedText);
+            const res = ticketApi.validateTicket(decodedText);
+            res.then((data) => {
+              if (data.error) {
+                setScannedResult(`Error: ${data.message}`);
+              } else if (data.valid) {
+                setScannedResult(`Valid Ticket: ${data.message}`);
+              } else {
+                setScannedResult(`Invalid Ticket : ${data.message}`);
+              }
+            });
+            // stop after success
+            scanner.stop().catch((err) => console.error("Stop failed:", err));
+          },
+          (errorMessage) => {
+            console.error(errorMessage);
+          }
+        );
+        setHtml5QrCode(scanner);
       };
 
       initScanner();
