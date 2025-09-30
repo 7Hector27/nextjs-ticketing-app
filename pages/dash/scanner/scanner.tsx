@@ -72,6 +72,7 @@ const Scanner = () => {
     processingRef.current = false;
     try {
       await scannerRef.current?.resume();
+      await scannerRef.current?.pause(false);
     } catch (err) {
       console.error("Failed to resume scanner:", err);
     }
