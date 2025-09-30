@@ -11,47 +11,43 @@ const Scanner = () => {
   const [scannedResult, setScannedResult] = useState<string | null>(null);
   const [html5QrCode, setHtml5QrCode] = useState<Html5Qrcode | null>(null);
   const ticketApi = new TicketAPI();
-  const initScanner = async () => {
-    const width = window.innerWidth;
-    const qrBoxSize = width < 500 ? width * 0.9 : 400;
-
-    const scanner = new Html5Qrcode(qrCodeRegionId);
-
-    await scanner.start(
-      { facingMode: "environment" },
-      {
-        fps: 10,
-        qrbox: { width: qrBoxSize, height: qrBoxSize },
-      },
-      (decodedText) => {
-        // ✅ Stop scanning immediately to avoid duplicates
-        scanner
-          .stop()
-          .then(() => {
-            return ticketApi.validateTicket(decodedText);
-          })
-          .then((data) => {
-            if (data.error) {
-              setScannedResult(`Error: ${data.message}`);
-            } else if (data.valid) {
-              setScannedResult(`✅ Valid Ticket: ${data.message}`);
-            } else {
-              setScannedResult(`❌ Invalid Ticket: ${data.message}`);
-            }
-          });
-      },
-      (errorMessage) => {
-        if (!errorMessage.includes("No MultiFormat Readers")) {
-          console.error("Scanner error:", errorMessage);
-          alert(`Scanner error: ${errorMessage}`);
-        }
-      }
-    );
-    setHtml5QrCode(scanner);
-  };
 
   useEffect(() => {
     if (!scannedResult) {
+      // Wait for the DOM to render the div
+      const initScanner = async () => {
+        const width = window.innerWidth;
+        const qrBoxSize = width < 500 ? width * 0.9 : 400;
+
+        const scanner = new Html5Qrcode(qrCodeRegionId);
+
+        await scanner.start(
+          { facingMode: "environment" }, // back camera
+          {
+            fps: 10,
+            qrbox: { width: qrBoxSize, height: qrBoxSize },
+          },
+          (decodedText) => {
+            const res = ticketApi.validateTicket(decodedText);
+            res.then((data) => {
+              if (data.error) {
+                setScannedResult(`Error: ${data.message}`);
+              } else if (data.valid) {
+                setScannedResult(`Valid Ticket: ${data.message}`);
+              } else {
+                setScannedResult(`Invalid Ticket : ${data.message}`);
+              }
+            });
+            // stop after success
+            //scanner.stop().catch((err) => console.error("Stop failed:", err));
+          },
+          (errorMessage) => {
+            console.error(errorMessage);
+          }
+        );
+        setHtml5QrCode(scanner);
+      };
+
       initScanner();
 
       return () => {
@@ -67,7 +63,6 @@ const Scanner = () => {
 
   const handleScanAgain = async () => {
     setScannedResult(null);
-    initScanner();
   };
 
   return (
@@ -83,6 +78,8 @@ const Scanner = () => {
             style={{ width: "100%", maxWidth: 500, margin: "0 auto" }}
           />
         )}
+
+        {/* Results */}
         {scannedResult && (
           <>
             <div className={styles.resultBox}>
