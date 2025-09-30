@@ -14,48 +14,39 @@ const Scanner = () => {
 
   useEffect(() => {
     if (!scannedResult) {
+      // Wait for the DOM to render the div
       const initScanner = async () => {
         const width = window.innerWidth;
         const qrBoxSize = width < 500 ? width * 0.9 : 400;
 
         const scanner = new Html5Qrcode(qrCodeRegionId);
 
-        // Wrap one scan in a Promise
-        const getNextScan = () =>
-          new Promise<string>((resolve, reject) => {
-            scanner
-              .start(
-                { facingMode: "environment" },
-                { fps: 10, qrbox: { width: qrBoxSize, height: qrBoxSize } },
-                async (decodedText) => {
-                  try {
-                    await scanner.stop(); // stop immediately
-                    resolve(decodedText); // pass decoded result forward
-                  } catch (err) {
-                    reject(err);
-                  }
-                },
-                () => {
-                  /* ignore frame errors */
-                }
-              )
-              .catch(reject);
-          });
+        const qrCodeResp = await scanner.start(
+          { facingMode: "environment" }, // back camera
+          {
+            fps: 10,
+            qrbox: { width: qrBoxSize, height: qrBoxSize },
+          },
+          (decodedText) => {
+            return decodedText;
+          },
+          (errorMessage) => {
+            console.error(errorMessage);
+            return;
+          }
+        );
 
-        try {
-          const decodedText = await getNextScan();
-          const data = await ticketApi.validateTicket(decodedText);
+        if (!qrCodeResp) return;
 
+        await ticketApi.validateTicket(qrCodeResp).then((data) => {
           if (data.error) {
             setScannedResult(`Error: ${data.message}`);
           } else if (data.valid) {
-            setScannedResult(`✅ Valid Ticket: ${data.message}`);
+            setScannedResult(`Valid Ticket: ${data.message}`);
           } else {
-            setScannedResult(`❌ Invalid Ticket: ${data.message}`);
+            setScannedResult(`Invalid Ticket : ${data.message}`);
           }
-        } catch (err) {
-          console.error("Scan failed:", err);
-        }
+        });
 
         setHtml5QrCode(scanner);
       };
