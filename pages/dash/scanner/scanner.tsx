@@ -21,7 +21,7 @@ const Scanner = () => {
 
         const scanner = new Html5Qrcode(qrCodeRegionId);
 
-        const qrCodeResp = await scanner.start(
+        const res = await scanner.start(
           { facingMode: "environment" }, // back camera
           {
             fps: 10,
@@ -29,15 +29,15 @@ const Scanner = () => {
           },
           (decodedText) => {
             return decodedText;
+            // stop after success
+            //scanner.stop().catch((err) => console.error("Stop failed:", err));
           },
           (errorMessage) => {
             console.error(errorMessage);
           }
         );
-
-        if (!qrCodeResp) return;
-
-        await ticketApi.validateTicket(qrCodeResp).then((data) => {
+        if (!res) return;
+        await ticketApi.validateTicket(res).then((data) => {
           if (data.error) {
             setScannedResult(`Error: ${data.message}`);
           } else if (data.valid) {
