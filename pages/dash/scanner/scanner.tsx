@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Html5Qrcode } from "html5-qrcode";
+
 import SiteLayout from "@/components/layouts/siteLayout";
+import TicketAPI from "@/lib/TicketAPI";
 
 import styles from "./scanner.module.scss";
 
@@ -8,6 +10,7 @@ const Scanner = () => {
   const qrCodeRegionId = "qr-reader";
   const [scannedResult, setScannedResult] = useState<string | null>(null);
   const [html5QrCode, setHtml5QrCode] = useState<Html5Qrcode | null>(null);
+  const ticketApi = new TicketAPI();
 
   useEffect(() => {
     if (!scannedResult) {
@@ -27,13 +30,21 @@ const Scanner = () => {
             },
             (decodedText) => {
               console.log("Scanned QR:", decodedText);
-              setScannedResult(decodedText);
-
+              const res = ticketApi.validateTicket(decodedText);
+              res.then((data) => {
+                if (data.error) {
+                  setScannedResult(`Error: ${data.error}`);
+                } else if (data.valid) {
+                  setScannedResult(`Valid Ticket: ${data.ticketInfo}`);
+                } else {
+                  setScannedResult("Invalid Ticket");
+                }
+              });
               // stop after success
               scanner.stop().catch((err) => console.error("Stop failed:", err));
             },
             (errorMessage) => {
-              // ignore decode errors
+              console.error(errorMessage);
             }
           );
           setHtml5QrCode(scanner);

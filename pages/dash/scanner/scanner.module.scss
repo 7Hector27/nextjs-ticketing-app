@@ -1,14 +1,12 @@
 .scannerPage {
-  background: #2d2a24; // Mocha
+  background: #2d2a24;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   font-family: sans-serif;
-  color: #ddc09f; // Text on Dark
-
-  // subtle wavy background pattern
+  color: #ddc09f;
   background-image: radial-gradient(
       circle at 20% 20%,
       rgba(180, 90, 12, 0.05),
@@ -21,7 +19,7 @@
 .title {
   font-size: 2rem;
   margin-bottom: 2rem;
-  color: #ddc09f; // Text on Dark
+  color: #ddc09f;
   text-align: center;
 }
 
