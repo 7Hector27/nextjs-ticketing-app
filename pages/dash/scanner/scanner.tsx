@@ -12,45 +12,43 @@ const Scanner = () => {
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const scanningRef = useRef(true); // 👈 flag to simulate pause/resume
   const ticketApi = new TicketAPI();
+  const initScanner = async () => {
+    const width = window.innerWidth;
+    const qrBoxSize = width < 500 ? width * 0.9 : 400;
 
-  useEffect(() => {
-    const initScanner = async () => {
-      const width = window.innerWidth;
-      const qrBoxSize = width < 500 ? width * 0.9 : 400;
+    if (!scannerRef.current) {
+      scannerRef.current = new Html5Qrcode(qrCodeRegionId);
+    }
 
-      if (!scannerRef.current) {
-        scannerRef.current = new Html5Qrcode(qrCodeRegionId);
-      }
+    try {
+      await scannerRef.current.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: qrBoxSize, height: qrBoxSize } },
+        async (decodedText) => {
+          if (!scanningRef.current) return; // 👈 ignore if "paused"
 
-      try {
-        await scannerRef.current.start(
-          { facingMode: "environment" },
-          { fps: 10, qrbox: { width: qrBoxSize, height: qrBoxSize } },
-          async (decodedText) => {
-            if (!scanningRef.current) return; // 👈 ignore if "paused"
+          scanningRef.current = false; // "pause"
 
-            scanningRef.current = false; // "pause"
+          const data = await ticketApi.validateTicket(decodedText);
 
-            const data = await ticketApi.validateTicket(decodedText);
-
-            if (data.error) {
-              setScannedResult(`Error: ${data.error}...${data.message}`);
-            } else if (data.valid) {
-              setScannedResult(`✅ Valid Ticket: ${data.message}`);
-            } else {
-              setScannedResult(`❌ Invalid Ticket: ${data.message}`);
-            }
-          },
-          (errorMessage) => {
-            // harmless frame decode errors
-            console.debug("Frame skipped:", errorMessage);
+          if (data.error) {
+            setScannedResult(`Error: ${data.error}...${data.message}`);
+          } else if (data.valid) {
+            setScannedResult(`✅ Valid Ticket: ${data.message}`);
+          } else {
+            setScannedResult(`❌ Invalid Ticket: ${data.message}`);
           }
-        );
-      } catch (err) {
-        console.error("Unable to start scanner:", err);
-      }
-    };
-
+        },
+        (errorMessage) => {
+          // harmless frame decode errors
+          console.debug("Frame skipped:", errorMessage);
+        }
+      );
+    } catch (err) {
+      console.error("Unable to start scanner:", err);
+    }
+  };
+  useEffect(() => {
     if (!scannedResult) {
       scanningRef.current = true; // allow scanning again
       initScanner();
@@ -66,8 +64,8 @@ const Scanner = () => {
 
   const handleScanAgain = () => {
     scanningRef.current = true; // allow scanning again
-
     setScannedResult(null);
+    initScanner();
   };
 
   return (
