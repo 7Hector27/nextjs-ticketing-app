@@ -12,59 +12,62 @@ const Scanner = () => {
   const [html5QrCode, setHtml5QrCode] = useState<Html5Qrcode | null>(null);
   const ticketApi = new TicketAPI();
 
-  useEffect(() => {
-    if (!scannedResult) {
-      const initScanner = async () => {
-        const width = window.innerWidth;
-        const qrBoxSize = width < 500 ? width * 0.9 : 400;
+  const startScanner = async (scanner: Html5Qrcode) => {
+    const width = window.innerWidth;
+    const qrBoxSize = width < 500 ? width * 0.9 : 400;
 
-        const scanner = new Html5Qrcode(qrCodeRegionId);
+    await scanner.start(
+      { facingMode: "environment" },
+      {
+        fps: 10,
+        qrbox: { width: qrBoxSize, height: qrBoxSize },
+      },
+      async (decodedText) => {
+        try {
+          // ✅ stop after first decode
+          await scanner.stop();
 
-        await scanner.start(
-          { facingMode: "environment" },
-          {
-            fps: 10,
-            qrbox: { width: qrBoxSize, height: qrBoxSize },
-          },
-          (decodedText) => {
-            // ✅ Stop scanning immediately to avoid duplicates
-            scanner
-              .stop()
-              .then(() => {
-                return ticketApi.validateTicket(decodedText);
-              })
-              .then((data) => {
-                if (data.error) {
-                  setScannedResult(`Error: ${data.message}`);
-                } else if (data.valid) {
-                  setScannedResult(`✅ Valid Ticket: ${data.message}`);
-                } else {
-                  setScannedResult(`❌ Invalid Ticket: ${data.message}`);
-                }
-              });
-          },
-          (errorMessage) => {
-            console.error(errorMessage);
+          const data = await ticketApi.validateTicket(decodedText);
+          if (data.error) {
+            setScannedResult(`Error: ${data.message}`);
+          } else if (data.valid) {
+            setScannedResult(`✅ Valid Ticket: ${data.message}`);
+          } else {
+            setScannedResult(`❌ Invalid Ticket: ${data.message}`);
           }
-        );
-        setHtml5QrCode(scanner);
-      };
-
-      initScanner();
-
-      return () => {
-        if (html5QrCode) {
-          html5QrCode
-            .stop()
-            .then(() => html5QrCode.clear())
-            .catch((err) => console.error("Failed to stop scanner:", err));
+        } catch (err) {
+          console.error("Validation error:", err);
         }
-      };
+      },
+      (errorMessage) => {
+        // optional: log decode errors
+      }
+    );
+  };
+
+  useEffect(() => {
+    const scanner = new Html5Qrcode(qrCodeRegionId);
+    setHtml5QrCode(scanner);
+
+    if (!scannedResult) {
+      startScanner(scanner);
     }
-  }, [scannedResult]);
+
+    return () => {
+      scanner
+        .stop()
+        .then(() => scanner.clear())
+        .catch(() => {});
+    };
+    // only run on mount/unmount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleScanAgain = async () => {
-    setScannedResult(null);
+    if (html5QrCode) {
+      setScannedResult(null);
+      await startScanner(html5QrCode); // ✅ restart scanner
+    }
   };
 
   return (
