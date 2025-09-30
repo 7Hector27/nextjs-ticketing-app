@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 
 import SiteLayout from "@/components/layouts/siteLayout";
@@ -9,54 +9,56 @@ import styles from "./scanner.module.scss";
 const Scanner = () => {
   const qrCodeRegionId = "qr-reader";
   const [scannedResult, setScannedResult] = useState<string | null>(null);
-  const [html5QrCode, setHtml5QrCode] = useState<Html5Qrcode | null>(null);
+  const scannerRef = useRef<Html5Qrcode | null>(null);
   const ticketApi = new TicketAPI();
 
-  const initScanner = async (scanner: Html5Qrcode) => {
+  const startScanner = async () => {
     const width = window.innerWidth;
     const qrBoxSize = width < 500 ? width * 0.9 : 400;
 
-    await scanner.start(
+    if (!scannerRef.current) {
+      scannerRef.current = new Html5Qrcode(qrCodeRegionId);
+    }
+
+    await scannerRef.current.start(
       { facingMode: "environment" },
       { fps: 10, qrbox: { width: qrBoxSize, height: qrBoxSize } },
       async (decodedText) => {
         try {
-          await scanner.stop(); // stop after one scan
+          await scannerRef.current?.stop(); // stop after one scan
+
           const data = await ticketApi.validateTicket(decodedText);
-          if (data.error) setScannedResult(`Error: ${data.message}`);
-          else if (data.valid)
+
+          if (data.error) {
+            setScannedResult(`Error: ${data.message}`);
+          } else if (data.valid) {
             setScannedResult(`✅ Valid Ticket: ${data.message}`);
-          else setScannedResult(`❌ Invalid Ticket: ${data.message}`);
+          } else {
+            setScannedResult(`❌ Invalid Ticket: ${data.message}`);
+          }
         } catch (err) {
           console.error("Validation failed:", err);
         }
       },
-      () => {} // ignore frame errors
+      () => {} // ignore frame decode errors
     );
   };
 
   useEffect(() => {
-    if (!html5QrCode) {
-      const scanner = new Html5Qrcode(qrCodeRegionId);
-      setHtml5QrCode(scanner);
-    }
+    if (!scannedResult) {
+      startScanner();
 
-    if (!scannedResult && html5QrCode) {
-      initScanner(html5QrCode);
-    }
-
-    return () => {
-      if (html5QrCode) {
-        html5QrCode
-          .stop()
-          .then(() => html5QrCode.clear())
+      return () => {
+        scannerRef.current
+          ?.stop()
+          .then(() => scannerRef.current?.clear())
           .catch((err) => console.error("Failed to stop scanner:", err));
-      }
-    };
-  }, [scannedResult, html5QrCode]);
+      };
+    }
+  }, [scannedResult]);
 
-  const handleScanAgain = async () => {
-    setScannedResult(null);
+  const handleScanAgain = () => {
+    setScannedResult(null); // triggers useEffect → restart scanner
   };
 
   return (
