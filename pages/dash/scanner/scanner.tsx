@@ -13,56 +13,55 @@ const Scanner = () => {
   const ticketApi = new TicketAPI();
 
   useEffect(() => {
-    if (!scannedResult) {
-      const initScanner = async () => {
-        const width = window.innerWidth;
-        const qrBoxSize = width < 500 ? width * 0.9 : 400;
+    const initScanner = async () => {
+      const width = window.innerWidth;
+      const qrBoxSize = width < 500 ? width * 0.9 : 400;
 
-        if (!scannerRef.current) {
-          scannerRef.current = new Html5Qrcode(qrCodeRegionId);
-        }
+      if (!scannerRef.current) {
+        scannerRef.current = new Html5Qrcode(qrCodeRegionId);
+      }
 
-        try {
-          await scannerRef.current.start(
-            { facingMode: "environment" }, // back camera
-            {
-              fps: 10,
-              qrbox: { width: qrBoxSize, height: qrBoxSize },
-            },
-            (decodedText) => {
-              if (scannedResult) return; // already have a result
-              const res = ticketApi.validateTicket(decodedText);
-              res.then((data) => {
-                if (data.error) {
-                  setScannedResult(`Error: ${data.error}...${data.message}`);
-                } else if (data.valid) {
-                  setScannedResult(`Valid Ticket: ${data.message}`);
-                } else {
-                  setScannedResult(`Invalid Ticket : ${data.message}`);
-                }
-              });
-            },
-            (errorMessage) => {
-              console.error(errorMessage);
-            }
-          );
-        } catch (err) {
-          console.error("Unable to start scanner:", err);
-        }
-      };
+      try {
+        await scannerRef.current.start(
+          { facingMode: "environment" }, // back camera
+          {
+            fps: 10,
+            qrbox: { width: qrBoxSize, height: qrBoxSize },
+          },
+          (decodedText) => {
+            if (scannedResult) return; // already have a result
+            const res = ticketApi.validateTicket(decodedText);
+            res.then((data) => {
+              if (data.error) {
+                setScannedResult(`Error: ${data.error}...${data.message}`);
+              } else if (data.valid) {
+                setScannedResult(`Valid Ticket: ${data.message}`);
+              } else {
+                setScannedResult(`Invalid Ticket : ${data.message}`);
+              }
+            });
+          },
+          (errorMessage) => {
+            console.error(errorMessage);
+          }
+        );
+      } catch (err) {
+        console.error("Unable to start scanner:", err);
+      }
+    };
 
-      initScanner();
+    initScanner();
 
-      return () => {
-        if (scannerRef.current) {
-          scannerRef.current
-            .stop()
-            .then(() => scannerRef.current?.clear())
-            .catch((err) => console.error("Failed to stop scanner:", err));
-        }
-      };
-    }
-  }, [scannedResult, ticketApi]);
+    return () => {
+      if (scannerRef.current) {
+        scannerRef.current
+          .stop()
+          .then(() => scannerRef.current?.clear())
+          .catch((err) => console.error("Failed to stop scanner:", err));
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ticketApi]); // run once
 
   const handleScanAgain = async () => {
     setScannedResult(null);
@@ -73,14 +72,14 @@ const Scanner = () => {
       <div className={styles.scannerPage}>
         <h1 className={styles.title}>Staff Ticket Scanner</h1>
 
-        {/* Scanner camera box */}
-        {!scannedResult && (
-          <div
-            id={qrCodeRegionId}
-            className={styles.scannerBox}
-            style={{ width: "100%", maxWidth: 500, margin: "0 auto" }}
-          />
-        )}
+        {/* Scanner camera box - always in DOM */}
+        <div
+          id={qrCodeRegionId}
+          className={`${styles.scannerBox} ${
+            scannedResult ? styles.hidden : ""
+          }`}
+          style={{ width: "100%", maxWidth: 500, margin: "0 auto" }}
+        />
 
         {/* Results */}
         {scannedResult && (
