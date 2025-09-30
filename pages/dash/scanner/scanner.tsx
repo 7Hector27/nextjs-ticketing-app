@@ -33,11 +33,11 @@ const Scanner = () => {
               const res = ticketApi.validateTicket(decodedText);
               res.then((data) => {
                 if (data.error) {
-                  setScannedResult(`Error: ${data.error}`);
+                  setScannedResult(`Error: ${data.error}...${data.message}`);
                 } else if (data.valid) {
-                  setScannedResult(`Valid Ticket: ${data.ticketInfo}`);
+                  setScannedResult(`Valid Ticket: ${data.message}`);
                 } else {
-                  setScannedResult("Invalid Ticket");
+                  setScannedResult(`Invalid Ticket : ${data.message}`);
                 }
               });
               // stop after success
