@@ -14,7 +14,6 @@ const Scanner = () => {
 
   useEffect(() => {
     if (!scannedResult) {
-      // Wait for the DOM to render the div
       const initScanner = async () => {
         const width = window.innerWidth;
         const qrBoxSize = width < 500 ? width * 0.9 : 400;
@@ -22,22 +21,28 @@ const Scanner = () => {
         const scanner = new Html5Qrcode(qrCodeRegionId);
 
         await scanner.start(
-          { facingMode: "environment" }, // back camera
+          { facingMode: "environment" },
           {
             fps: 10,
             qrbox: { width: qrBoxSize, height: qrBoxSize },
           },
           (decodedText) => {
-            const res = ticketApi.validateTicket(decodedText);
-            res.then((data) => {
-              if (data.error) {
-                setScannedResult(`Error: ${data.message}`);
-              } else if (data.valid) {
-                setScannedResult(`Valid Ticket: ${data.message}`);
-              } else {
-                setScannedResult(`Invalid Ticket : ${data.message}`);
-              }
-            });
+            // ✅ Stop scanning immediately to avoid duplicates
+            scanner
+              .stop()
+              .then(() => {
+                return ticketApi.validateTicket(decodedText);
+              })
+              .then((data) => {
+                if (data.error) {
+                  setScannedResult(`Error: ${data.message}`);
+                } else if (data.valid) {
+                  setScannedResult(`✅ Valid Ticket: ${data.message}`);
+                } else {
+                  setScannedResult(`❌ Invalid Ticket: ${data.message}`);
+                }
+              })
+              .catch((err) => console.error("Failed to stop scanner:", err));
           },
           (errorMessage) => {
             console.error(errorMessage);
@@ -76,8 +81,6 @@ const Scanner = () => {
             style={{ width: "100%", maxWidth: 500, margin: "0 auto" }}
           />
         )}
-
-        {/* Results */}
         {scannedResult && (
           <>
             <div className={styles.resultBox}>

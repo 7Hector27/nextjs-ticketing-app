@@ -24,7 +24,7 @@ const FeaturedDashEvent = ({
   const eventApi = new EventAPI();
   const router = useRouter();
 
-  const { data: featuredEvents, isLoading } = useQuery({
+  const { data: featuredEvents, isPending } = useQuery({
     queryKey: ["featuredEvents"],
     queryFn: async () => {
       const res = await eventApi.getEvents({ featured: true, limit: 3 });
@@ -32,7 +32,7 @@ const FeaturedDashEvent = ({
     },
   });
 
-  if (isLoading) return <FullPageLoader />;
+  if (isPending) return <FullPageLoader />;
 
   return (
     <div className={styles.featuredDashEvents}>

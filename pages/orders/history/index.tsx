@@ -1,6 +1,7 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
+import { format } from "date-fns";
 
 import SiteLayout from "@/components/layouts/siteLayout";
 import { OrderType } from "@/utils/types";
@@ -43,7 +44,10 @@ const OrderHistory = () => {
       <div className={styles.orderHistory}>
         <h2 className={styles.title}>Order History</h2>
         {data?.map((order: OrderType) => {
-          const { event, tickets, orderId } = order;
+          const { event, tickets, orderId, createdAt } = order;
+          const myDate = new Date(createdAt);
+          const datePart = format(myDate, "MMM dd, yyyy");
+
           return (
             <div
               key={orderId}
@@ -57,6 +61,7 @@ const OrderHistory = () => {
                 {tickets.length} {tickets.length > 1 ? "tickets" : "ticket"}
               </p>
               <p>Order ID: {orderId}</p>
+              <p>Purchased: {datePart}</p>
             </div>
           );
         })}
