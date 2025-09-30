@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 
 import SiteLayout from "@/components/layouts/siteLayout";
@@ -9,73 +9,65 @@ import styles from "./scanner.module.scss";
 const Scanner = () => {
   const qrCodeRegionId = "qr-reader";
   const [scannedResult, setScannedResult] = useState<string | null>(null);
-
-  const scannerRef = useRef<Html5Qrcode | null>(null);
-  const processingRef = useRef(false); // prevent multiple scans
+  const [html5QrCode, setHtml5QrCode] = useState<Html5Qrcode | null>(null);
   const ticketApi = new TicketAPI();
 
   useEffect(() => {
-    const initScanner = async () => {
-      const width = window.innerWidth;
-      const qrBoxSize = width < 500 ? width * 0.9 : 400;
+    if (!scannedResult) {
+      // Wait for the DOM to render the div
+      const initScanner = async () => {
+        const width = window.innerWidth;
+        const qrBoxSize = width < 500 ? width * 0.9 : 400;
 
-      if (!scannerRef.current) {
-        scannerRef.current = new Html5Qrcode(qrCodeRegionId);
-      }
+        const scanner = new Html5Qrcode(qrCodeRegionId);
 
-      try {
-        await scannerRef.current.start(
-          { facingMode: "environment" },
-          { fps: 10, qrbox: { width: qrBoxSize, height: qrBoxSize } },
-          async (decodedText) => {
-            if (processingRef.current) return; // ignore duplicates
-            processingRef.current = true;
-
-            try {
-              const data = await ticketApi.validateTicket(decodedText);
-              if (data.error) {
-                setScannedResult(`Error: ${data.error}...${data.message}`);
-              } else if (data.valid) {
-                setScannedResult(`Valid Ticket: ${data.message}`);
-              } else {
-                setScannedResult(`Invalid Ticket : ${data.message}`);
-              }
-
-              // pause scanning after first scan
-              await scannerRef.current?.pause(true);
-            } catch (err) {
-              console.error("Validation error:", err);
-              processingRef.current = false;
+        try {
+          await scanner.start(
+            { facingMode: "environment" }, // back camera
+            {
+              fps: 10,
+              qrbox: { width: qrBoxSize, height: qrBoxSize },
+            },
+            (decodedText) => {
+              if (scannedResult) return; // already have a result
+              const res = ticketApi.validateTicket(decodedText);
+              res.then((data) => {
+                if (data.error) {
+                  setScannedResult(`Error: ${data.error}...${data.message}`);
+                } else if (data.valid) {
+                  setScannedResult(`Valid Ticket: ${data.message}`);
+                } else {
+                  setScannedResult(`Invalid Ticket : ${data.message}`);
+                }
+              });
+              // stop after success
+              // scanner.stop().catch((err) => console.error("Stop failed:", err));
+            },
+            (errorMessage) => {
+              console.error(errorMessage);
             }
-          },
-          (errorMessage) => {
-            console.error("QR error:", errorMessage);
-          }
-        );
-      } catch (err) {
-        console.error("Unable to start scanner:", err);
-      }
-    };
+          );
+          setHtml5QrCode(scanner);
+        } catch (err) {
+          console.error("Unable to start scanner:", err);
+        }
+      };
 
-    initScanner();
+      initScanner();
 
-    return () => {
-      scannerRef.current
-        ?.stop()
-        .then(() => scannerRef.current?.clear())
-        .catch((err) => console.error("Failed to stop scanner:", err));
-    };
-  }, []);
+      return () => {
+        if (html5QrCode) {
+          html5QrCode
+            .stop()
+            .then(() => html5QrCode.clear())
+            .catch((err) => console.error("Failed to stop scanner:", err));
+        }
+      };
+    }
+  }, [scannedResult]);
 
   const handleScanAgain = async () => {
     setScannedResult(null);
-    processingRef.current = false;
-    try {
-      await scannerRef.current?.resume();
-      await scannerRef.current?.pause(false);
-    } catch (err) {
-      console.error("Failed to resume scanner:", err);
-    }
   };
 
   return (
