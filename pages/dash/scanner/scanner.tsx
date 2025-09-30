@@ -28,7 +28,6 @@ const Scanner = () => {
             qrbox: { width: qrBoxSize, height: qrBoxSize },
           },
           (decodedText) => {
-            console.log("Scanned QR:", decodedText);
             const res = ticketApi.validateTicket(decodedText);
             res.then((data) => {
               if (data.error) {
@@ -40,7 +39,7 @@ const Scanner = () => {
               }
             });
             // stop after success
-            scanner.stop().catch((err) => console.error("Stop failed:", err));
+            //scanner.stop().catch((err) => console.error("Stop failed:", err));
           },
           (errorMessage) => {
             console.error(errorMessage);
