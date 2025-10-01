@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 
 import SiteLayout from "@/components/layouts/siteLayout";
@@ -9,104 +9,67 @@ import styles from "./scanner.module.scss";
 const Scanner = () => {
   const qrCodeRegionId = "qr-reader";
   const [scannedResult, setScannedResult] = useState<string | null>(null);
-  const [html5QrCode, setHtml5QrCode] = useState<Html5Qrcode | null>(null);
+  const scannerRef = useRef<Html5Qrcode | null>(null);
   const ticketApi = new TicketAPI();
 
-  useEffect(() => {
-    if (!scannedResult) {
-      // Wait for the DOM to render the div
-      const initScanner = async () => {
-        const width = window.innerWidth;
-        const qrBoxSize = width < 500 ? width * 0.9 : 400;
-
-        const scanner = new Html5Qrcode(qrCodeRegionId);
-
-        try {
-          await scanner.start(
-            { facingMode: "environment" },
-            { fps: 10, qrbox: { width: qrBoxSize, height: qrBoxSize } },
-            (decodedText) => {
-              console.log("Scanned QR:", decodedText);
-              const res = ticketApi.validateTicket(decodedText);
-              res.then((data) => {
-                if (data.error) {
-                  setScannedResult(`Error: ${data.error}`);
-                } else if (data.valid) {
-                  setScannedResult(`Valid Ticket: ${data.message}`);
-                } else {
-                  setScannedResult(`Invalid Ticket : ${data.message}`);
-                }
-              });
-            },
-            (errorMessage: string | { message?: string }) => {
-              const msg =
-                typeof errorMessage === "string"
-                  ? errorMessage
-                  : errorMessage?.message || "";
-
-              if (
-                msg.includes("source width is 0") ||
-                msg.includes(
-                  "No MultiFormat Readers were able to detect the code"
-                )
-              ) {
-                return; // ignore common noise
-              }
-
-              console.error("QR error:", errorMessage);
-            }
-          );
-
-          setHtml5QrCode(scanner);
-        } catch (err) {
-          console.error("Unable to start scanner:", err);
-        }
-      };
-
-      initScanner();
-
-      return () => {
-        if (html5QrCode) {
-          html5QrCode
-            .stop()
-            .then(() => html5QrCode.clear())
-            .catch((err) => console.error("Failed to stop scanner:", err));
-        }
-      };
+  const startScanner = async () => {
+    if (!scannerRef.current) {
+      scannerRef.current = new Html5Qrcode(qrCodeRegionId);
     }
-  }, [scannedResult]);
 
-  const handleScanAgain = async () => {
-    setScannedResult(null);
+    try {
+      await scannerRef.current.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 300, height: 300 } },
+        async (decodedText) => {
+          console.log("QR Code detected:", decodedText);
+          setScannedResult(decodedText);
+
+          // Optional: auto-stop after first scan
+          await stopScanner();
+
+          // Example: call your API with the scanned code
+          try {
+            const response = await ticketApi.validateTicket(decodedText);
+            console.log("API Response:", response);
+          } catch (apiErr) {
+            console.error("Ticket API error:", apiErr);
+          }
+        },
+        (errorMessage) => {
+          // you can ignore frame scan errors if you don’t want spam logs
+        }
+      );
+    } catch (err) {
+      console.error("Error starting scanner:", err);
+    }
+  };
+
+  const stopScanner = async () => {
+    if (scannerRef.current) {
+      try {
+        await scannerRef.current.stop();
+        scannerRef.current.clear();
+      } catch (err) {
+        console.error("Error stopping scanner:", err);
+      }
+    }
   };
 
   return (
     <SiteLayout>
-      <div className={styles.scannerPage}>
-        <h1 className={styles.title}>Staff Ticket Scanner</h1>
-
-        {/* Scanner camera box */}
-        {!scannedResult && (
-          <div
-            id={qrCodeRegionId}
-            className={styles.scannerBox}
-            style={{ width: "100%", maxWidth: 500, margin: "0 auto" }}
-          />
-        )}
-
-        {/* Results */}
+      <div className={styles.scannerWrapper}>
+        <div
+          id={qrCodeRegionId}
+          style={{ width: "100%", height: "400px" }}
+          className={styles.resultBox}
+        />
+        <div className={styles.controls}>
+          <button onClick={startScanner}>Start Scanner</button>
+          <button onClick={stopScanner}>Stop Scanner</button>
+        </div>
         {scannedResult && (
-          <>
-            <div className={styles.resultBox}>
-              <h2>Scan Result</h2>
-              <p>{scannedResult}</p>
-            </div>
-            <div className={styles.actions}>
-              <button className={styles.actionButton} onClick={handleScanAgain}>
-                Scan Another Ticket
-              </button>
-            </div>
-          </>
+          <p className={styles.result}>Scanned: {scannedResult}</p>
         )}
       </div>
     </SiteLayout>
