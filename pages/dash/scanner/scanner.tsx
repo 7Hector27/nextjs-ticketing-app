@@ -86,10 +86,11 @@ const Scanner = () => {
         )}
         <div className={styles.actions}>
           <button
-            onClick={() => {
+            onClick={async () => {
               setScannedResult(null);
-              startScanner();
+              await startScanner();
             }}
+            className={styles.actionButton}
           >
             Start Scanner
           </button>
