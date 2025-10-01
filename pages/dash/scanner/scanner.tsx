@@ -66,10 +66,18 @@ const Scanner = () => {
           <div className={styles.controls}>
             <button onClick={startScanner}>Start Scanner</button>
           </div>
-          {scannedResult && (
-            <p className={styles.result}>Scanned: {scannedResult}</p>
-          )}
         </div>
+        {scannedResult && (
+          <>
+            <div className={styles.resultBox}>
+              <h2>Scan Result</h2>
+              <p>{scannedResult}</p>
+            </div>
+            <div className={styles.actions}>
+              <button onClick={startScanner}>Start Scanner</button>
+            </div>
+          </>
+        )}
       </div>
     </SiteLayout>
   );
