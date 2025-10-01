@@ -1,5 +1,6 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Html5Qrcode } from "html5-qrcode";
+import { useMutation } from "@tanstack/react-query";
 
 import SiteLayout from "@/components/layouts/siteLayout";
 import TicketAPI from "@/lib/TicketAPI";
@@ -12,6 +13,23 @@ const Scanner = () => {
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const ticketApi = new TicketAPI();
 
+  // React Query mutation
+  const validateTicketMutation = useMutation({
+    mutationFn: (code: string) => ticketApi.validateTicket(code),
+    onSuccess: (data) => {
+      if (data.error) {
+        setScannedResult(`Error: ${data.error}`);
+      } else if (data.valid) {
+        setScannedResult(`Valid Ticket: ${data.message}`);
+      } else {
+        setScannedResult(`Invalid Ticket : ${data.message}`);
+      }
+    },
+    onError: (err) => {
+      setScannedResult(`Error: ${err.message || "Validation failed"}`);
+    },
+  });
+
   const startScanner = async () => {
     if (!scannerRef.current) {
       scannerRef.current = new Html5Qrcode(qrCodeRegionId);
@@ -23,19 +41,11 @@ const Scanner = () => {
         { facingMode: "environment" },
         { fps: 10, qrbox: { width: qrBoxSize, height: qrBoxSize } },
         async (decodedText) => {
-          // Optional: auto-stop after first scan
+          // stop scanning to avoid multiple triggers
           await stopScanner();
 
-          const res = ticketApi.validateTicket(decodedText);
-          res.then((data) => {
-            if (data.error) {
-              setScannedResult(`Error: ${data.error}`);
-            } else if (data.valid) {
-              setScannedResult(`Valid Ticket: ${data.message}`);
-            } else {
-              setScannedResult(`Invalid Ticket : ${data.message}`);
-            }
-          });
+          // call the mutation
+          validateTicketMutation.mutate(decodedText);
         },
         (errorMessage: string | { message?: string }) => {
           const msg =
@@ -68,27 +78,42 @@ const Scanner = () => {
       }
     }
   };
+
+  useEffect(() => {
+    if (scannedResult === null) {
+      startScanner();
+    }
+  }, [scannedResult]);
+
   return (
     <SiteLayout>
       <div className={styles.scannerPage}>
-        <h1 className={styles.title}>Staff Ticket Scanner{}</h1>
+        <h1 className={styles.title}>Staff Ticket Scanner</h1>
+
         {!scannedResult && (
           <div className={styles.scannerWrapper}>
             <div id={qrCodeRegionId} className={styles.resultBox} />
           </div>
         )}
 
-        {scannedResult && (
+        {validateTicketMutation.isPending && (
+          <div className={styles.resultBox}>
+            <h2>Validating Ticket...</h2>
+            <div className={styles.spinner}></div> {/* add CSS spinner */}
+          </div>
+        )}
+
+        {scannedResult && !validateTicketMutation.isPending && (
           <div className={styles.resultBox}>
             <h2>Scan Result</h2>
             <p>{scannedResult}</p>
           </div>
         )}
+
         <div className={styles.actions}>
           <button
             onClick={async () => {
               setScannedResult(null);
-              await startScanner();
             }}
             className={styles.actionButton}
           >
