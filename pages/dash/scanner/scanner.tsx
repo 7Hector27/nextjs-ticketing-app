@@ -92,14 +92,14 @@ const Scanner = () => {
 
         {!scannedResult && (
           <div className={styles.scannerWrapper}>
-            <div id={qrCodeRegionId} className={styles.resultBox} />
-          </div>
-        )}
-
-        {validateTicketMutation.isPending && (
-          <div className={styles.resultBox}>
-            <h2>Validating Ticket...</h2>
-            <div className={styles.spinner}></div> {/* add CSS spinner */}
+            {validateTicketMutation.isPending ? (
+              <div className={styles.resultBox}>
+                <h2>Validating Ticket...</h2>
+                <div className={styles.spinner}></div>
+              </div>
+            ) : (
+              <div id={qrCodeRegionId} className={styles.resultBox} />
+            )}
           </div>
         )}
 
