@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { format } from "date-fns";
 import { QRCodeCanvas } from "qrcode.react";
+import { toPng } from "html-to-image"; // 👈 import
 
 import FullPageLoader from "@/components/FullPageLoader";
 import OrderAPI from "@/lib/OrderAPI";
@@ -23,11 +24,12 @@ const OrderById = () => {
     queryFn: async () => {
       if (!orderId) return null;
       const res = await orderApi.getOrderById(`${orderId}`);
-
       return res;
     },
     enabled: !!orderId,
   });
+
+  const orderRef = useRef<HTMLDivElement>(null); // 👈 reference to .orderById
 
   if (isPending) return <FullPageLoader />;
 
@@ -39,9 +41,24 @@ const OrderById = () => {
 
   if (!eventId) return;
 
+  // 👇 download the whole .orderById div
+  const downloadOrderDiv = async () => {
+    if (!orderRef.current) return;
+
+    try {
+      const dataUrl = await toPng(orderRef.current, { cacheBust: true });
+      const link = document.createElement("a");
+      link.download = `order-${orderId}-${currentTicket}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error("Failed to download:", err);
+    }
+  };
+
   return (
     <SiteLayout>
-      <div className={styles.orderById}>
+      <div className={styles.orderById} ref={orderRef}>
         <div
           className={styles.prev}
           onClick={() => {
@@ -56,6 +73,7 @@ const OrderById = () => {
             height={75}
           />
         </div>
+
         <div className={styles.qrCodeWrapper}>
           <h2>{title}</h2>
           <QRCodeCanvas
@@ -70,8 +88,12 @@ const OrderById = () => {
             <p>
               {currentTicket + 1} out of {tickets.length} • Order ID: {orderId}
             </p>
-          </div>
+          </div>{" "}
+          <button onClick={downloadOrderDiv} className={styles.downloadButton}>
+            Download Ticket Card
+          </button>
         </div>
+
         <div
           className={styles.next}
           onClick={() => {

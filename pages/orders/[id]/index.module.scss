@@ -25,7 +25,7 @@
     gap: 10px;
     background-color: #faf8f6;
     width: 300px;
-    height: 420px;
+    height: 475px;
     padding: 20px 20px;
     margin-top: 30px;
     border: 1px solid #2d2a24;
@@ -56,6 +56,19 @@
         font-weight: 700;
       }
     }
+    .downloadButton {
+      width: 160px;
+      height: 30px;
+      border: none;
+      border-radius: 6px;
+      background-color: #956d37;
+      color: white;
+      margin: 10px auto 0;
+      cursor: pointer;
+      &:hover {
+        background-color: #7a572d;
+      }
+    }
   }
 }
 
@@ -69,11 +82,11 @@
     .prev,
     .next {
       width: 50px;
-      height: 550px;
+      height: 600px;
     }
     .qrCodeWrapper {
       width: 500px;
-      height: 550px;
+      height: 600px;
       h2 {
         width: 300px;
         font-size: 32px;

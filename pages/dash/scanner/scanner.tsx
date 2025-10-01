@@ -57,7 +57,7 @@ const Scanner = () => {
             msg.includes("source width is 0") ||
             msg.includes("No MultiFormat Readers were able to detect the code")
           ) {
-            return; // ignore common noise
+            return;
           }
 
           console.error("QR error:", errorMessage);
