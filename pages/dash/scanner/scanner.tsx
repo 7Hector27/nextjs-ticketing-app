@@ -16,11 +16,12 @@ const Scanner = () => {
     if (!scannerRef.current) {
       scannerRef.current = new Html5Qrcode(qrCodeRegionId);
     }
-
+    const width = window.innerWidth;
+    const qrBoxSize = width < 500 ? width * 0.8 : 400;
     try {
       await scannerRef.current.start(
         { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 300, height: 300 } },
+        { fps: 10, qrbox: { width: qrBoxSize, height: qrBoxSize } },
         async (decodedText) => {
           console.log("QR Code detected:", decodedText);
           setScannedResult(decodedText);
@@ -58,19 +59,17 @@ const Scanner = () => {
 
   return (
     <SiteLayout>
-      <div className={styles.scannerWrapper}>
-        <div
-          id={qrCodeRegionId}
-          style={{ width: "100%", height: "400px" }}
-          className={styles.resultBox}
-        />
-        <div className={styles.controls}>
-          <button onClick={startScanner}>Start Scanner</button>
-          <button onClick={stopScanner}>Stop Scanner</button>
+      <div className={styles.scannerPage}>
+        <h1 className={styles.title}>Staff Ticket Scanner</h1>
+        <div className={styles.scannerWrapper}>
+          <div id={qrCodeRegionId} className={styles.resultBox} />
+          <div className={styles.controls}>
+            <button onClick={startScanner}>Start Scanner</button>
+          </div>
+          {scannedResult && (
+            <p className={styles.result}>Scanned: {scannedResult}</p>
+          )}
         </div>
-        {scannedResult && (
-          <p className={styles.result}>Scanned: {scannedResult}</p>
-        )}
       </div>
     </SiteLayout>
   );
