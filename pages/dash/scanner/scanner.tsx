@@ -29,16 +29,31 @@ const Scanner = () => {
           // Optional: auto-stop after first scan
           await stopScanner();
 
-          // Example: call your API with the scanned code
-          try {
-            const response = await ticketApi.validateTicket(decodedText);
-            console.log("API Response:", response);
-          } catch (apiErr) {
-            console.error("Ticket API error:", apiErr);
-          }
+          const res = ticketApi.validateTicket(decodedText);
+          res.then((data) => {
+            if (data.error) {
+              setScannedResult(`Error: ${data.error}`);
+            } else if (data.valid) {
+              setScannedResult(`Valid Ticket: ${data.message}`);
+            } else {
+              setScannedResult(`Invalid Ticket : ${data.message}`);
+            }
+          });
         },
-        (errorMessage) => {
-          // you can ignore frame scan errors if you don’t want spam logs
+        (errorMessage: string | { message?: string }) => {
+          const msg =
+            typeof errorMessage === "string"
+              ? errorMessage
+              : errorMessage?.message || "";
+
+          if (
+            msg.includes("source width is 0") ||
+            msg.includes("No MultiFormat Readers were able to detect the code")
+          ) {
+            return; // ignore common noise
+          }
+
+          console.error("QR error:", errorMessage);
         }
       );
     } catch (err) {
@@ -56,28 +71,25 @@ const Scanner = () => {
       }
     }
   };
-
   return (
     <SiteLayout>
       <div className={styles.scannerPage}>
-        <h1 className={styles.title}>Staff Ticket Scanner</h1>
-        <div className={styles.scannerWrapper}>
-          <div id={qrCodeRegionId} className={styles.resultBox} />
-          <div className={styles.controls}>
-            <button onClick={startScanner}>Start Scanner</button>
+        <h1 className={styles.title}>Staff Ticket Scanner{}</h1>
+        {!scannedResult && (
+          <div className={styles.scannerWrapper}>
+            <div id={qrCodeRegionId} className={styles.resultBox} />
           </div>
-        </div>
-        {scannedResult && (
-          <>
-            <div className={styles.resultBox}>
-              <h2>Scan Result</h2>
-              <p>{scannedResult}</p>
-            </div>
-            <div className={styles.actions}>
-              <button onClick={startScanner}>Start Scanner</button>
-            </div>
-          </>
         )}
+
+        {scannedResult && (
+          <div className={styles.resultBox}>
+            <h2>Scan Result</h2>
+            <p>{scannedResult}</p>
+          </div>
+        )}
+        <div className={styles.actions}>
+          <button onClick={startScanner}>Start Scanner</button>
+        </div>
       </div>
     </SiteLayout>
   );
