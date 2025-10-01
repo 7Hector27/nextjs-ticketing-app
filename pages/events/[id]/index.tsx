@@ -72,7 +72,6 @@ export default function EventDetailPage() {
     submitMutation.mutate({ numberOfTickets, eventId: event.eventId });
   };
 
-  // Loading and not found states
   if (isPending) return <FullPageLoader />;
   if (!event) return <p>Event not found</p>;
 

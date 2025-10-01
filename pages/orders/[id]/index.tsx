@@ -3,8 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { format } from "date-fns";
 import { QRCodeCanvas } from "qrcode.react";
-import { toPng } from "html-to-image"; // 👈 import
-
+import { toPng } from "html-to-image";
 import FullPageLoader from "@/components/FullPageLoader";
 import OrderAPI from "@/lib/OrderAPI";
 import SiteLayout from "@/components/layouts/siteLayout";
@@ -41,7 +40,6 @@ const OrderById = () => {
 
   if (!eventId) return;
 
-  // 👇 download the whole .orderById div
   const downloadOrderDiv = async () => {
     if (!orderRef.current) return;
 
@@ -88,7 +86,7 @@ const OrderById = () => {
             <p>
               {currentTicket + 1} out of {tickets.length} • Order ID: {orderId}
             </p>
-          </div>{" "}
+          </div>
           <button onClick={downloadOrderDiv} className={styles.downloadButton}>
             Download Ticket Card
           </button>
