@@ -23,9 +23,6 @@ const Scanner = () => {
         { facingMode: "environment" },
         { fps: 10, qrbox: { width: qrBoxSize, height: qrBoxSize } },
         async (decodedText) => {
-          console.log("QR Code detected:", decodedText);
-          setScannedResult(decodedText);
-
           // Optional: auto-stop after first scan
           await stopScanner();
 
@@ -88,7 +85,14 @@ const Scanner = () => {
           </div>
         )}
         <div className={styles.actions}>
-          <button onClick={startScanner}>Start Scanner</button>
+          <button
+            onClick={() => {
+              setScannedResult(null);
+              startScanner();
+            }}
+          >
+            Start Scanner
+          </button>
         </div>
       </div>
     </SiteLayout>
