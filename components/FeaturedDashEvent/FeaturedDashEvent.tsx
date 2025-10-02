@@ -25,7 +25,7 @@ const FeaturedDashEvent = ({
   const router = useRouter();
 
   const { data: featuredEvents, isPending } = useQuery({
-    queryKey: ["featuredEvents"],
+    queryKey: ["featuredEvents", { limit: 3, featured: true }],
     queryFn: async () => {
       const res = await eventApi.getEvents({ featured: true, limit: 3 });
       return res.items;

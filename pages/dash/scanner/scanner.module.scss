@@ -17,7 +17,22 @@
     transform: rotate(360deg);
   }
 }
-
+@keyframes waveFlow {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 200px 0; // moves one full tile
+  }
+}
+@keyframes waveShift {
+  from {
+    background-position: 0 0, 200px 200px;
+  }
+  to {
+    background-position: 400px 0, 600px 200px;
+  }
+}
 .scannerPage {
   background: #2d2a24;
   min-height: 100vh;
@@ -27,15 +42,22 @@
   justify-content: flex-start;
   font-family: sans-serif;
   color: #ddc09f;
-  background-image: radial-gradient(
-      circle at 20% 20%,
-      rgba(180, 90, 12, 0.05),
-      transparent 25%
-    ),
-    radial-gradient(circle at 80% 80%, rgba(136, 68, 8, 0.05), transparent 25%);
   background-size: 400px 400px;
+  background-image: repeating-radial-gradient(
+      circle at center,
+      transparent 0,
+      transparent 38px,
+      rgba(255, 255, 255, 0.06) 40px
+    ),
+    repeating-radial-gradient(
+      circle at center,
+      transparent 0,
+      transparent 78px,
+      rgba(255, 255, 255, 0.02) 80px
+    );
+  background-size: 400px 400px, 600px 600px;
+  background-position: 0 0, 200px 200px;
 }
-
 .title {
   font-size: 2rem;
   margin-bottom: 2rem;
