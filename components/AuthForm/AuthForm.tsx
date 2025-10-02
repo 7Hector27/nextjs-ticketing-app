@@ -3,12 +3,22 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 
 import Loader from "../ButtonLoader";
+
 import UserAPI from "@/lib/UserAPI";
 import { useUser } from "@/context/UserContext";
+
 import styles from "./AuthForm.module.scss";
 
-const AuthForm = () => {
+type AuthFormProps = {
+  setToast: (toast: {
+    message: string | React.ReactNode;
+    type: "success" | "error";
+  }) => void;
+};
+
+const AuthForm = ({ setToast }: AuthFormProps) => {
   const [isLogIn, setIsLogIn] = useState(true);
+
   const userAPI = new UserAPI();
   const router = useRouter();
   const { refetchUser } = useUser();
@@ -28,19 +38,27 @@ const AuthForm = () => {
         data.password
       ),
     onSuccess: async (response) => {
-      if (response.ok) {
-        console.log("User created successfully!");
+      // Show toast only
+      setToast({
+        message: (
+          <>
+            Account created successfully! <br /> Please log in.
+          </>
+        ),
+        type: "success",
+      });
+
+      // Switch form after toast delay
+      setTimeout(() => {
         setIsLogIn(true);
-        // clear form values
-        const form = document.querySelector("form") as HTMLFormElement | null;
-        if (form) form.reset();
-      } else {
-        const data = await response.json();
-        alert(`Error: ${data}`);
-      }
+        // no direct form.reset() – React state handles it
+      }, 3000);
     },
     onError: (error) => {
-      alert(error.message || "An error occurred while creating the user.");
+      setToast({
+        message: error.message || "An error occurred while creating the user.",
+        type: "error",
+      });
     },
   });
 
@@ -129,7 +147,7 @@ const AuthForm = () => {
               placeholder="First Name"
               className={styles.input}
               required
-            />{" "}
+            />
             <input
               type="text"
               id="lastName"
@@ -153,6 +171,7 @@ const AuthForm = () => {
               placeholder="Password"
               className={styles.input}
               required
+              minLength={7}
             />
             <button
               type="submit"

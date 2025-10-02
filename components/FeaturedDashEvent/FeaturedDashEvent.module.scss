@@ -1,17 +1,65 @@
 .featuredDashEvents {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   color: #2d2a24;
-  padding-top: 40px;
+  padding: 60px 20px;
+  overflow: hidden;
+
   > h2 {
-    padding-bottom: 20px;
+    padding-bottom: 30px;
+    position: relative;
+    z-index: 2;
   }
+
+  .blobWrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    filter: blur(60px);
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .blob {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle at center, #f6a623, #d16ba5);
+    border-radius: 50%;
+    opacity: 0.6;
+    animation: blobMove 20s infinite ease-in-out alternate;
+  }
+
+  .blob:nth-child(2) {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle at center, #fbc2eb, #a6c0fe);
+    top: 20%;
+    left: 60%;
+    animation-duration: 25s;
+  }
+
+  .blob:nth-child(3) {
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle at center, #84fab0, #8fd3f4);
+    bottom: 10%;
+    left: 30%;
+    animation-duration: 25s;
+  }
+
   .content {
     display: flex;
     flex-direction: column;
     gap: 14px;
+    position: relative;
+    z-index: 2;
+
     .eventCard {
       width: 250px;
       height: 275px;
@@ -20,23 +68,28 @@
       box-sizing: border-box;
       background-color: #faf8f6;
       cursor: pointer;
+      transition: all 0.25s ease-in-out;
+
       &:hover {
-        border-color: #956d37; // your primary brass
-        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
-        transform: translateY(-2px);
-        transition: all 0.2s ease-in-out;
+        border-color: #956d37;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        transform: translateY(-4px);
       }
+
       .imgWrapper {
         width: 100%;
         height: 150px;
         overflow: hidden;
+
         .img {
           width: 100%;
+          height: 100%;
+          object-fit: cover;
           border-top-left-radius: 10px;
           border-top-right-radius: 10px;
-          height: 100%;
         }
       }
+
       .cardContent {
         padding: 10px 10px;
         display: flex;
@@ -55,50 +108,63 @@
           justify-content: center;
         }
         .title {
-          justify-content: flex-start;
+          font-weight: 700;
+          color: #2d2a24;
         }
         .date,
         .tickets {
           font-size: 12px;
           font-weight: 600;
+          color: #555;
         }
       }
     }
   }
+
   .link {
     width: 120px;
-    height: 35px;
-    margin: 20px 0 0;
+    height: 40px;
+    margin: 25px 0 0;
     display: flex;
     justify-content: center;
     align-items: center;
     color: white;
-    border-radius: 5px;
+    border-radius: 6px;
     cursor: pointer;
     background-color: #956d37;
-    color: white;
+    z-index: 2;
+    font-weight: 600;
+    transition: background 0.2s ease-in-out;
+
     &:hover {
       background-color: #7a572d;
     }
   }
 }
+
 @media (min-width: 768px) {
   .featuredDashEvents {
     .content {
       flex-direction: row;
       .eventCard {
-        width: 200px;
-        height: 250px;
+        width: 220px;
+        height: 260px;
         .imgWrapper {
-          width: 100%;
-          height: 125px;
+          height: 130px;
         }
       }
     }
   }
 }
 
-@media (min-width: 1248px) {
-  .featuredDashEvents {
+@keyframes blobMove {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(100px, -50px) scale(1.2);
+  }
+  100% {
+    transform: translate(-50px, 100px) scale(0.9);
   }
 }

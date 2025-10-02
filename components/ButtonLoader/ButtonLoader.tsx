@@ -1,10 +1,15 @@
 import React from "react";
+import classNames from "classnames";
 
 import styles from "./ButtonLoader.module.scss";
 
-const Loader = () => {
+type LoaderProps = {
+  className?: string;
+};
+
+const Loader = ({ className }: LoaderProps) => {
   return (
-    <div className={styles.loaderWrapper}>
+    <div className={classNames(styles.loaderWrapper, className)}>
       <span className={styles.spinner} />
     </div>
   );
