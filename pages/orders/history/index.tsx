@@ -1,5 +1,5 @@
 import React from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { format } from "date-fns";
 
@@ -19,31 +19,34 @@ const OrderHistory = () => {
   const { user } = useUser();
   const { userId } = user || {};
 
-  const { data, isPending } = useQuery({
-    queryKey: ["userOrders", userId],
-    queryFn: async () => {
-      if (!userId) return null;
-
-      const res = await orderApi.getUserOrdersById(userId);
-
-      return res.orders;
-    },
-    enabled: !!userId,
-  });
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } =
+    useInfiniteQuery({
+      queryKey: ["userOrders", userId],
+      queryFn: async ({ pageParam }) => {
+        if (!userId) return null;
+        // Call your API with lastKey param if it exists
+        const res = await orderApi.getUserOrdersById(userId, pageParam);
+        return res;
+      },
+      getNextPageParam: (lastPage) => {
+        // backend sends { orders, lastKey }
+        return lastPage?.lastKey ?? undefined;
+      },
+      enabled: !!userId,
+      initialPageParam: null,
+    });
 
   if (isPending) {
     return <FullPageLoader />;
   }
 
-  if (!data) {
-    return <div>...loading</div>;
-  }
+  const orders = data?.pages.flatMap((page) => page?.orders || []) || [];
 
   return (
     <SiteLayout>
       <div className={styles.orderHistory}>
         <h2 className={styles.title}>Order History</h2>
-        {data?.map((order: OrderType) => {
+        {orders.map((order: OrderType) => {
           const { event, tickets, orderId, createdAt } = order;
           const myDate = new Date(createdAt);
           const datePart = format(myDate, "MMM dd, yyyy");
@@ -52,9 +55,7 @@ const OrderHistory = () => {
             <div
               key={orderId}
               className={styles.orderWrapper}
-              onClick={() => {
-                router.push(`/orders/${orderId}`);
-              }}
+              onClick={() => router.push(`/orders/${orderId}`)}
             >
               <h2>{event?.title}</h2>
               <p>
@@ -65,6 +66,16 @@ const OrderHistory = () => {
             </div>
           );
         })}
+
+        {hasNextPage && (
+          <button
+            onClick={() => fetchNextPage()}
+            disabled={isFetchingNextPage}
+            className={styles.loadMoreBtn}
+          >
+            {isFetchingNextPage ? "Loading more..." : "Load More"}
+          </button>
+        )}
       </div>
     </SiteLayout>
   );

@@ -1,5 +1,5 @@
-import { OrderType } from "@/utils/types";
 import { API_URL } from "@/utils/client";
+import { OrderType } from "@/utils/types";
 
 export default class OrderAPI {
   async createOrder({
@@ -26,15 +26,18 @@ export default class OrderAPI {
     }
   }
 
-  async getUserOrdersById(id: string) {
+  async getUserOrdersById(id: string, lastKey?: string | null) {
     try {
-      const res = await fetch(`${API_URL}/orders/${id}/orders`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      });
+      const res = await fetch(
+        `${API_URL}/orders/${id}/orders?lastKey=${lastKey || ""}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        }
+      );
 
       return res.json();
     } catch (err) {

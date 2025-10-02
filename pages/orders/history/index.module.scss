@@ -31,4 +31,16 @@
       transition: all 0.2s ease-in-out;
     }
   }
+  .loadMoreBtn {
+    width: 120px;
+    height: 40px;
+    border: none;
+    border-radius: 6px;
+    background-color: #956d37;
+    color: white;
+    cursor: pointer;
+    &:hover {
+      background-color: #7a572d;
+    }
+  }
 }
