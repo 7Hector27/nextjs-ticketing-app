@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import EventForm from "@/components/EventForm";
 import Navbar from "@/components/Navbar";
 import Toast from "@/components/Toast";
+import SiteLayout from "@/components/layouts/siteLayout";
 
 import styles from "./index.module.scss";
 
@@ -12,7 +13,7 @@ const Events = () => {
     type: "success" | "error";
   } | null>(null);
   return (
-    <div className={styles.events}>
+    <SiteLayout className={styles.events}>
       <Navbar />
       {toast && (
         <Toast
@@ -25,7 +26,7 @@ const Events = () => {
         <EventForm setToast={setToast} />
         <div className={styles.eventsList}></div>
       </div>
-    </div>
+    </SiteLayout>
   );
 };
 
