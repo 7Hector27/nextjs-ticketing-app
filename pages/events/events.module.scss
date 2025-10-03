@@ -1,10 +1,4 @@
 .events {
-  background-color: #f1e1d3;
-  height: 100%;
-  overflow: auto;
-  padding-bottom: 3rem;
-  color: #2d2a24;
-
   .body {
     width: 350px;
     padding: 10px;
@@ -12,8 +6,9 @@
     justify-content: center;
     align-items: center;
     margin: 0 auto;
+    padding-top: 50px;
+
     .eventHeader {
-      padding-top: 40px;
       display: flex;
       flex-direction: column;
       justify-content: center;

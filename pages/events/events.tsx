@@ -8,6 +8,7 @@ import EventCard from "@/components/EventCard";
 import Navbar from "@/components/Navbar";
 
 import styles from "./events.module.scss";
+import SiteLayout from "@/components/layouts/siteLayout";
 
 const Event = () => {
   const eventApi = new EventAPI();
@@ -23,8 +24,7 @@ const Event = () => {
   if (isLoading) return <FullPageLoader />;
 
   return (
-    <div className={styles.events}>
-      <Navbar />
+    <SiteLayout className={styles.events}>
       <div className={styles.body}>
         <div className={styles.eventHeader}>
           <h2>Events</h2>
@@ -36,7 +36,7 @@ const Event = () => {
           })}
         </div>
       </div>
-    </div>
+    </SiteLayout>
   );
 };
 

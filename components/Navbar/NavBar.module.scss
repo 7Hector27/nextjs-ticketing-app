@@ -1,12 +1,16 @@
 .navBarWrapper {
   background-color: #2d2a24;
   width: 100%;
+  z-index: 9999;
+  position: fixed;
+  top: 0;
+  left: 0;
   .navbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 20px;
-
+    z-index: 9999;
     .logo {
       font-size: 28px;
       font-weight: bold;
@@ -23,7 +27,8 @@
       border: none;
       cursor: pointer;
       padding: 5px;
-
+      z-index: 9999;
+      background-color: lavender;
       span {
         width: 25px;
         height: 3px;
@@ -69,13 +74,15 @@
 
       @media (max-width: 768px) {
         display: none;
-        position: absolute;
+        position: fixed;
         top: 70px;
         right: 20px;
         flex-direction: column;
         background: #2d2a24;
         padding: 20px;
         border-radius: 8px;
+        z-index: 9999;
+        width: auto;
       }
 
       &.open {

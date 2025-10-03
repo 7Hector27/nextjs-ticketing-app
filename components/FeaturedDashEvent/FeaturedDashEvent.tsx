@@ -36,11 +36,6 @@ const FeaturedDashEvent = ({
 
   return (
     <div className={styles.featuredDashEvents}>
-      <div className={styles.blobContainer}>
-        <div className={`${styles.blob} ${styles.blob1}`} />
-        <div className={`${styles.blob} ${styles.blob2}`} />
-        <div className={`${styles.blob} ${styles.blob3}`} />
-      </div>
       <h2>Featured Events</h2>
       <div className={styles.content}>
         {featuredEvents?.map((event: EventType, index: number) => {
