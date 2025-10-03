@@ -64,6 +64,22 @@
           text-decoration: underline;
         }
       }
+      .staffDropdown {
+        .dropdownToggle {
+          background: none;
+          color: #956d37;
+          border: none;
+        }
+        .dropdownMenu {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          margin-top: 8px;
+          p {
+            font-size: 12px;
+          }
+        }
+      }
     }
   }
 }

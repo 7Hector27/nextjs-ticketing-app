@@ -1,11 +1,11 @@
 import React from "react";
 import Link from "next/link";
 
-import Navbar from "@/components/Navbar";
-import { useUser } from "@/context/UserContext";
-
 import FullPageLoader from "@/components/FullPageLoader";
 import FeaturedDashEvent from "@/components/FeaturedDashEvent";
+import SiteLayout from "@/components/layouts/siteLayout";
+
+import { useUser } from "@/context/UserContext";
 
 import styles from "./dash.module.scss";
 
@@ -15,8 +15,7 @@ const Dashboard = () => {
   if (loading) return;
 
   return (
-    <div className={styles.dash}>
-      <Navbar />
+    <SiteLayout className={styles.dash}>
       {loading ? (
         <FullPageLoader />
       ) : (
@@ -35,7 +34,7 @@ const Dashboard = () => {
           <FeaturedDashEvent disableRedirect />
         </div>
       )}
-    </div>
+    </SiteLayout>
   );
 };
 

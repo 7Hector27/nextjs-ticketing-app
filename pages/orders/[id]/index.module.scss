@@ -22,38 +22,44 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 10px;
-    background-color: #faf8f6;
-    width: 300px;
-    height: 500px;
-    padding: 20px 20px;
-    margin-top: 30px;
-    border: 1px solid #2d2a24;
-    border-radius: 6px;
-    h2 {
-      text-align: center;
-      width: 230px;
-      padding-bottom: 10px;
-    }
+    margin-top: 50px;
     .qrCode {
-      padding: 15px;
-      background-color: white;
-      border-radius: 6px;
-      border: 1px solid #2d2a24;
-      width: 220px !important;
-      height: 220px !important;
-    }
-    .eventInfo {
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      gap: 8px;
-      padding: 10px 0 0;
-      p {
-        width: 220px;
-        font-size: 15px;
-        font-weight: 700;
+      gap: 10px;
+      background-color: #faf8f6;
+      width: 300px;
+      height: 450px;
+      padding: 0 20px;
+      border: 1px solid #2d2a24;
+      border-radius: 6px;
+      h2 {
+        text-align: center;
+        width: 230px;
+        padding-bottom: 10px;
+      }
+      .qrCode {
+        padding: 15px;
+        background-color: white;
+        border-radius: 6px;
+        border: 1px solid #2d2a24;
+        width: 220px !important;
+        height: 220px !important;
+      }
+      .eventInfo {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 0 0;
+        p {
+          width: 220px;
+          font-size: 15px;
+          font-weight: 700;
+        }
       }
     }
     .downloadButton {
@@ -85,20 +91,22 @@
       height: 600px;
     }
     .qrCodeWrapper {
-      width: 500px;
-      height: 600px;
-      h2 {
-        width: 300px;
-        font-size: 32px;
-      }
       .qrCode {
-        width: 300px !important;
-        height: 300px !important;
-      }
-      .eventInfo {
-        p {
+        width: 500px;
+        height: 600px;
+        h2 {
           width: 300px;
-          font-size: 18px;
+          font-size: 32px;
+        }
+        .qrCode {
+          width: 300px !important;
+          height: 300px !important;
+        }
+        .eventInfo {
+          p {
+            width: 300px;
+            font-size: 18px;
+          }
         }
       }
     }

@@ -56,7 +56,7 @@ const OrderById = () => {
 
   return (
     <SiteLayout>
-      <div className={styles.orderById} ref={orderRef}>
+      <div className={styles.orderById}>
         <div
           className={styles.prev}
           onClick={() => {
@@ -71,27 +71,28 @@ const OrderById = () => {
             height={75}
           />
         </div>
-
         <div className={styles.qrCodeWrapper}>
-          <h2>{title}</h2>
-          <QRCodeCanvas
-            value={tickets[currentTicket].qrCodeData}
-            className={styles.qrCode}
-          />
-          <div className={styles.eventInfo}>
-            <p>
-              {datePart}, {timePart}
-            </p>
-            <p>{location}</p>
-            <p>
-              {currentTicket + 1} out of {tickets.length} • Order ID: {orderId}
-            </p>
+          <div className={styles.qrCode} ref={orderRef}>
+            <h2>{title}</h2>
+            <QRCodeCanvas
+              value={tickets[currentTicket].qrCodeData}
+              className={styles.qrCode}
+            />
+            <div className={styles.eventInfo}>
+              <p>
+                {datePart}, {timePart}
+              </p>
+              <p>{location}</p>
+              <p>
+                {currentTicket + 1} out of {tickets.length} • Order ID:{" "}
+                {orderId}
+              </p>
+            </div>
           </div>
           <button onClick={downloadOrderDiv} className={styles.downloadButton}>
             Download Ticket Card
           </button>
         </div>
-
         <div
           className={styles.next}
           onClick={() => {

@@ -1,15 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/router";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import Image from "next/image";
 import { format } from "date-fns";
 
 import FullPageLoader from "@/components/FullPageLoader";
-import Navbar from "@/components/Navbar";
+import SiteLayout from "@/components/layouts/siteLayout";
+import Toast from "@/components/Toast";
 
 import EventAPI from "@/lib/EventAPI";
 import OrderAPI from "@/lib/OrderAPI";
-
 import { formatToUSD } from "@/utils/client";
 import { useUser } from "@/context/UserContext";
 
@@ -22,7 +22,10 @@ export default function EventDetailPage() {
   const eventApi = new EventAPI();
   const orderApi = new OrderAPI();
   const { user, loading, refetchUser } = useUser();
-
+  const [toast, setToast] = useState<{
+    message: string | React.ReactNode;
+    type: "success" | "error";
+  } | null>(null);
   // Fetch event data
   const { data: event, isPending } = useQuery({
     queryKey: ["event", id],
@@ -61,8 +64,10 @@ export default function EventDetailPage() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!user) {
-      // create toast component
-      alert("Please sign in to continue with purchase");
+      setToast({
+        message: <>Please sign in to continue with purchase</>,
+        type: "error",
+      });
       return;
     }
     if (!event) return;
@@ -92,9 +97,7 @@ export default function EventDetailPage() {
   const timePart = format(eventDate, "hh:mm a");
 
   return (
-    <div className={styles.eventDetailsPage}>
-      <Navbar />
-
+    <SiteLayout className={styles.eventDetailsPage}>
       <div className={styles.body}>
         <div className={styles.eventCard}>
           <div className={styles.imgWrapper}>
@@ -187,7 +190,14 @@ export default function EventDetailPage() {
             {submitMutation.isPending ? "Processing..." : "Buy Ticket"}
           </button>
         </form>
+        {toast && (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={() => setToast(null)}
+          />
+        )}
       </div>
-    </div>
+    </SiteLayout>
   );
 }

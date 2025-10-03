@@ -18,6 +18,7 @@ type AuthFormProps = {
 
 const AuthForm = ({ setToast }: AuthFormProps) => {
   const [isLogIn, setIsLogIn] = useState(true);
+  const [displayStaffAccount, setDisplayStaffAccount] = useState(false);
 
   const userAPI = new UserAPI();
   const router = useRouter();
@@ -52,7 +53,7 @@ const AuthForm = ({ setToast }: AuthFormProps) => {
       setTimeout(() => {
         setIsLogIn(true);
         // no direct form.reset() – React state handles it
-      }, 3000);
+      }, 2500);
     },
     onError: (error) => {
       setToast({
@@ -73,7 +74,10 @@ const AuthForm = ({ setToast }: AuthFormProps) => {
       router.push("/dash");
     },
     onError: (error) => {
-      console.error(error.message || "An error occurred while logging in.");
+      setToast({
+        message: error.message || "An error occurred while logging in.",
+        type: "error",
+      });
     },
   });
 
@@ -85,6 +89,15 @@ const AuthForm = ({ setToast }: AuthFormProps) => {
     const lastName = formData.get("lastName") as string;
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
+    const confirmPassword = formData.get("confirmPassword") as string;
+
+    if (password !== confirmPassword) {
+      setToast({
+        message: "Passwords do not match!",
+        type: "error",
+      });
+      return;
+    }
     signUpMutation.mutate({ firstName, lastName, email, password });
   };
 
@@ -137,6 +150,22 @@ const AuthForm = ({ setToast }: AuthFormProps) => {
                 Sign Up
               </button>
             </p>
+            <div className={styles.staffDropdown}>
+              <button
+                type="button"
+                className={styles.dropdownToggle}
+                onClick={() => setDisplayStaffAccount((prev) => !prev)}
+              >
+                Click here for staff account
+              </button>
+
+              {displayStaffAccount && (
+                <div className={styles.dropdownMenu}>
+                  <p>Email: staff@mail.com</p>
+                  <p>Password: password123</p>
+                </div>
+              )}
+            </div>
           </form>
         ) : (
           <form onSubmit={handleSignUp} className={styles.form}>
@@ -169,6 +198,15 @@ const AuthForm = ({ setToast }: AuthFormProps) => {
               id="password"
               name="password"
               placeholder="Password"
+              className={styles.input}
+              required
+              minLength={7}
+            />
+            <input
+              type="password"
+              id="confirmPassword"
+              name="confirmPassword"
+              placeholder="Confirm Password"
               className={styles.input}
               required
               minLength={7}
