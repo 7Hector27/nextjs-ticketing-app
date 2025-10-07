@@ -44,14 +44,34 @@ const OrderById = () => {
     if (!orderRef.current) return;
 
     try {
+      // 🔹 Convert QR canvas to data URL
+      const qrCanvas = orderRef.current.querySelector("canvas");
+      let tempImg: HTMLImageElement | null = null;
+
+      if (qrCanvas) {
+        const dataUrl = qrCanvas.toDataURL("image/png");
+        tempImg = document.createElement("img");
+        tempImg.src = dataUrl;
+        tempImg.style.width = qrCanvas.style.width;
+        tempImg.style.height = qrCanvas.style.height;
+        qrCanvas.parentNode?.insertBefore(tempImg, qrCanvas);
+        qrCanvas.style.display = "none";
+      }
+
+      // 🔹 Capture the div
       const blob = await toBlob(orderRef.current, { cacheBust: true });
       if (!blob) return;
+
+      // 🔹 Restore original QR canvas
+      if (qrCanvas && tempImg) {
+        qrCanvas.style.display = "";
+        tempImg.remove();
+      }
 
       const file = new File([blob], `ticket-${orderId}-${currentTicket}.png`, {
         type: "image/png",
       });
 
-      // Detect mobile
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -61,12 +81,10 @@ const OrderById = () => {
           text: "Here’s my event ticket!",
         });
       } else if (isMobile) {
-        // fallback: open in a new tab
         const url = URL.createObjectURL(blob);
         const newTab = window.open();
         newTab?.document.write(`<img src="${url}" style="width:100%" />`);
       } else {
-        // desktop: force download
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
