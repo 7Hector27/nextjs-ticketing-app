@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { format } from "date-fns";
 import { QRCodeCanvas } from "qrcode.react";
-import { toPng } from "html-to-image";
+import { toBlob } from "html-to-image";
 import FullPageLoader from "@/components/FullPageLoader";
 import OrderAPI from "@/lib/OrderAPI";
 import SiteLayout from "@/components/layouts/siteLayout";
@@ -44,20 +44,35 @@ const OrderById = () => {
     if (!orderRef.current) return;
 
     try {
-      const dataUrl = await toPng(orderRef.current, { cacheBust: true });
+      const blob = await toBlob(orderRef.current, { cacheBust: true });
+      if (!blob) return;
 
+      const file = new File([blob], `ticket-${orderId}-${currentTicket}.png`, {
+        type: "image/png",
+      });
+
+      // Detect mobile
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-      if (isMobile) {
-        // Open image in a new tab for manual save
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: "My Ticket",
+          text: "Here’s my event ticket!",
+        });
+      } else if (isMobile) {
+        // fallback: open in a new tab
+        const url = URL.createObjectURL(blob);
         const newTab = window.open();
-        newTab?.document.write(`<img src="${dataUrl}" style="width:100%" />`);
+        newTab?.document.write(`<img src="${url}" style="width:100%" />`);
       } else {
-        // Desktop download
+        // desktop: force download
+        const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
-        link.download = `order-${orderId}-${currentTicket}.png`;
-        link.href = dataUrl;
+        link.href = url;
+        link.download = `ticket-${orderId}-${currentTicket}.png`;
         link.click();
+        URL.revokeObjectURL(url);
       }
     } catch (err) {
       console.error("Failed to download:", err);
