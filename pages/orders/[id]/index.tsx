@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { format } from "date-fns";
-import { QRCodeCanvas } from "qrcode.react";
+import { QRCodeSVG } from "qrcode.react";
 import { toBlob } from "html-to-image";
 import FullPageLoader from "@/components/FullPageLoader";
 import OrderAPI from "@/lib/OrderAPI";
@@ -117,7 +117,7 @@ const OrderById = () => {
         <div className={styles.qrCodeWrapper}>
           <div className={styles.qrCode} ref={orderRef}>
             <h2>{title}</h2>
-            <QRCodeCanvas
+            <QRCodeSVG
               value={tickets[currentTicket].qrCodeData}
               className={styles.qrCode}
             />
