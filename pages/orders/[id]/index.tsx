@@ -45,10 +45,20 @@ const OrderById = () => {
 
     try {
       const dataUrl = await toPng(orderRef.current, { cacheBust: true });
-      const link = document.createElement("a");
-      link.download = `order-${orderId}-${currentTicket}.png`;
-      link.href = dataUrl;
-      link.click();
+
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+      if (isMobile) {
+        // Open image in a new tab for manual save
+        const newTab = window.open();
+        newTab?.document.write(`<img src="${dataUrl}" style="width:100%" />`);
+      } else {
+        // Desktop download
+        const link = document.createElement("a");
+        link.download = `order-${orderId}-${currentTicket}.png`;
+        link.href = dataUrl;
+        link.click();
+      }
     } catch (err) {
       console.error("Failed to download:", err);
     }

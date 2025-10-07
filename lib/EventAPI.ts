@@ -60,6 +60,7 @@ export default class EventAPI {
       return res.json();
     } catch (err) {
       console.error("createEvent error:", err);
+      console.log(err, "HEY ERRORon createEvent");
       return { error: err };
     }
   }

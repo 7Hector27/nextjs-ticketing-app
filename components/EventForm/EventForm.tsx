@@ -22,12 +22,20 @@ const EventForm = ({ setToast }: eventFormProps) => {
 
   const createEventMutation = useMutation({
     mutationFn: async (data: EventType) => eventApi.createEvent(data),
-    onSuccess: () =>
+    onSuccess: (data) => {
+      console.log(data);
       setToast({
         message: <>Event created successfully!</>,
         type: "success",
-      }),
-    onError: (err) => alert(err.message),
+      });
+    },
+    onError: (err) => {
+      console.log(err, "HEY ERROR");
+      setToast({
+        message: `${err}`,
+        type: "error",
+      });
+    },
   });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
